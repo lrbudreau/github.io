@@ -10,6 +10,7 @@
   <script defer src="script.js"></script> <!-- Link to your JavaScript file -->
 </head>
 <body>
+  <div id="header-placeholder"></div>
   <main>
     <p>This will import excel data and use the information to create various dashboards for the end user</p>
   </main>
@@ -19,3 +20,10 @@
   </footer>
 </body>
 </html>
+<script>
+  fetch("header.html")
+    .then(response => response.text())
+    .then(data => {
+      document.getElementById("header-placeholder").innerHTML = data;
+    });
+</script>

@@ -1,5 +1,35 @@
-
-  <div id="header-placeholder"></div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <link href="https://www.purdue.edu/purdue/images/favicon.ico" rel="shortcut icon"> <!-- page title icon -->
+  <title>Template</title>
+  <link rel="stylesheet" type="text/css" href="https://www.purdue.edu/purdue/fonts/champion-all.css" />
+  <script defer src="script.js"></script> <!-- Link to your JavaScript file -->
+</head>
+  <div class="page-wrapper">
+    <header>
+      <div class="header-content">
+        <div id="purdue-logo">
+          <a href="http://www.purdue.edu" title="Purdue University homepage">
+            <img src="https://live-purdue-marketing.pantheonsite.io/app/uploads/2022/09/PU-H-logo.jpg" alt="Purdue University">
+          </a>
+        </div>
+        <div id="entity-title">
+          <a href="https://purdue.edu/" target="_blank">Test Department</a>
+        </div>
+      </div>
+      <nav class="top-nav">
+        <ul class="nav-links">
+          <li><a href="#">Home</a></li>
+          <li><a href="#">Programs</a></li>
+          <li><a href="#">Research</a></li>
+          <li><a href="#">Contact</a></li>
+        </ul>
+      </nav>
+    </header>
       <h1>Welcome to the Dashboard</h1>
       <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam in dui mauris. Vivamus hendrerit arcu sed erat molestie vehicula.</p>
       
@@ -26,28 +56,4 @@
           </div>
         </div>
       </div>
-<div id="footer-placeholder"></div>
-</div>
-<div id="css-placeholder"></div>
-<script>
-  //include header
-  fetch("header.html")
-    .then(response => response.text())
-    .then(data => {
-      document.getElementById("header-placeholder").innerHTML = data;
-    });
 
-  //include footer
-    fetch("footer.html")
-    .then(response => response.text())
-    .then(data => {
-      document.getElementById("footer-placeholder").innerHTML = data;
-    });
-  
-    //include css
-    fetch("style.css")
-    .then(response => response.text())
-    .then(data => {
-      document.getElementById("css-placeholder").innerHTML = data;
-    });
-</script>

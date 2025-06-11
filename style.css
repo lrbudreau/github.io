@@ -1,29 +1,107 @@
 <style>
-  .top-nav {
-    background-color: #d7d7d7;
-    padding: 10px 20px;
-  }
+ html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: 'Champion HTF', sans-serif;
+      background-color: #f9f9f9;
+    }
 
-  .nav-links {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    gap: 20px;
-  }
+    .page-wrapper {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
 
-  .nav-links li {
-    display: inline;
-  }
+    header {
+      background-color: #eee;
+      padding: 15px 20px;
+      border-bottom: 1px solid #ccc;
+    }
 
-  .nav-links a {
-    text-decoration: none;
-    color: #000;
-    font-weight: bold;
-    font-family: 'Champion HTF', sans-serif;
-  }
+    .header-content {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+    }
 
-  .nav-links a:hover {
-    text-decoration: underline;
-  }
+    #purdue-logo img {
+      width: 180px;
+      height: auto;
+    }
+
+    #entity-title a {
+      font-size: 24px;
+      font-weight: bold;
+      color: #000;
+      text-decoration: none;
+    }
+
+    nav.top-nav {
+      background-color: #222;
+    }
+
+    .nav-links {
+      list-style: none;
+      margin: 0;
+      padding: 10px 20px;
+      display: flex;
+      gap: 20px;
+    }
+
+    .nav-links li a {
+      color: #fff;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .nav-links li a:hover {
+      text-decoration: underline;
+    }
+
+    main {
+      flex: 1;
+      padding: 40px 20px;
+    }
+
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 30px;
+    }
+
+    .card {
+      background-color: #fff;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+
+    .card img {
+      width: 100%;
+      height: auto;
+    }
+
+    .card-content {
+      padding: 20px;
+    }
+
+    .card-content h3 {
+      margin-top: 0;
+      font-size: 1.2em;
+      color: #333;
+    }
+
+    .card-content p {
+      color: #555;
+    }
+
+    footer {
+      background-color: #222;
+      color: #fff;
+      text-align: center;
+      padding: 15px 10px;
+    }
 </style>

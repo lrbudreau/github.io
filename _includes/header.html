@@ -13,8 +13,21 @@
     .header-content {
       display: flex;
       align-items: center;
-      justify-content: space-between;
+      justify-content: flex-start;
       flex-wrap: wrap;
+    }
+    
+    .branding {
+      display: flex;
+      align-items: center;
+      gap: 10px; 
+    }
+    
+    .department-title {
+      font-size: 24px;
+      font-weight: bold;
+      color: #000;
+      text-decoration: none;
     }
 
     #purdue-logo img {
@@ -97,16 +110,14 @@
     }
 </style>
     <header>
-      <div class="header-content">
-        <div id="purdue-logo">
-          <a href="http://www.purdue.edu" title="Purdue University homepage">
-            <img src="https://live-purdue-marketing.pantheonsite.io/app/uploads/2022/09/PU-H-logo.jpg" style="width: 200px; height: auto" alt="Purdue University">
-          </a>
-        </div>
-        <div id="entity-title">
-          <a href="https://purdue.edu/" target="_blank" style="float: left;"> | Test Department</a>
-        </div>
+    <div class="header-content">
+      <div class="branding">
+        <a href="http://www.purdue.edu" title="Purdue University homepage">
+          <img src="https://live-purdue-marketing.pantheonsite.io/app/uploads/2022/09/PU-H-logo.jpg" style="width: 200px; height: auto" alt="Purdue University">
+        </a>
+        <a href="https://purdue.edu/" target="_blank" class="department-title">| Test Department</a>
       </div>
+    </div>
       <nav class="top-nav">
         <ul class="nav-links">
           <li><a href="#">Home</a></li>

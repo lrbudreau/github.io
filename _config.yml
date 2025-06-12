@@ -2,7 +2,7 @@ title: Test Department
 description: A template site for Purdue testing
 baseurl: "" # leave empty unless your site is in a subfolder
 url: "https://lrbudreau.github.io" # your GitHub Pages URL
-theme: minima
+theme: null
 
 # Include folders/files that Jekyll doesn’t process by default
 include:

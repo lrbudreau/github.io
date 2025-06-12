@@ -7,6 +7,6 @@ url: "https://lrbudreau.github.io" # your GitHub Pages URL
 include:
   - _includes
   - _layouts
-  - assets
+  - _assets
 
 markdown: kramdown

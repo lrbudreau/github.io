@@ -1,0 +1,62 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Grant Street Garage",
+        "type": "Visitor",
+        "free": false,
+        "occupancy": 0.65
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-86.9125, 40.4249],
+          [-86.9120, 40.4249],
+          [-86.9120, 40.4245],
+          [-86.9125, 40.4245],
+          [-86.9125, 40.4249]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "University Street Garage",
+        "type": "A/B",
+        "free": false,
+        "occupancy": 0.85
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-86.9184, 40.4258],
+          [-86.9180, 40.4258],
+          [-86.9180, 40.4254],
+          [-86.9184, 40.4254],
+          [-86.9184, 40.4258]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "South Campus Lot",
+        "type": "Free",
+        "free": true,
+        "occupancy": 0.20
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-86.9219, 40.4178],
+          [-86.9212, 40.4178],
+          [-86.9212, 40.4173],
+          [-86.9219, 40.4173],
+          [-86.9219, 40.4178]
+        ]]
+      }
+    }
+  ]
+}

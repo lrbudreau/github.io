@@ -127,16 +127,26 @@
           .then(data => {
             L.geoJSON(data, {
                 style: feature => {
-                    // Color lots based on occupancy
                     const occ = feature.properties.occupancy;
                     let color = occ > 0.8 ? 'red' : occ > 0.5 ? 'orange' : 'green';
                     return { color: color, weight: 2, fillOpacity: 0.4 };
                 },
                 onEachFeature: (feature, layer) => {
+                    const name = feature.properties.name;
+                    const occupancy = (feature.properties.occupancy * 100).toFixed(0);
+                    const address = feature.properties.address;
+        
+                    // Use coordinates to open Google Maps
+                    const center = layer.getBounds().getCenter(); 
+                    const lat = center.lat;
+                    const lng = center.lng;
+        
+                    const googleMapsURL = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
+        
                     layer.bindPopup(`
-                        <b>${feature.properties.name}</b><br>
-                        Type: ${feature.properties.type}<br>
-                        Occupancy: ${(feature.properties.occupancy * 100).toFixed(0)}%
+                        <b>${name}</b><br>
+                        Occupancy: ${occupancy}%<br>
+                        <a href="${googleMapsURL}" target="_blank">Get Directions</a>
                     `);
                 }
             }).addTo(map);

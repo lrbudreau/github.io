@@ -44,101 +44,124 @@
 </head>
 <body>
 
-    <h1>Purdue Parking Finder</h1>
+<h1>Purdue Parking Finder</h1>
 
-    <div id="controls">
-        <label>Pass Type: 
-            <select id="passType" onchange="filterParking()">
-                <option value="A">A</option>
-                <option value="B">B</option>
-                <option value="C">C</option>
-                <option value="Visitor">Visitor</option>
-                <option value="None">None</option>
-            </select>
-        </label>
+<div id="controls">
+    <label>Pass Type: 
+        <select id="passType" onchange="filterParking()">
+            <option value="A">A</option>
+            <option value="B">B</option>
+            <option value="C">C</option>
+            <option value="Visitor">Visitor</option>
+            <option value="None">None</option>
+        </select>
+    </label>
 
-        <label>Destination Building:
-            <input type="text" id="building" placeholder="e.g., LILY">
-        </label>
+    <label>Destination Building:
+        <input type="text" id="building" placeholder="e.g., LILY">
+    </label>
 
-        <label>Free Parking Only:
-            <input type="checkbox" id="freeOnly" onchange="filterParking()">
-        </label>
+    <label>Free Parking Only:
+        <input type="checkbox" id="freeOnly" onchange="filterParking()">
+    </label>
 
-        <label>Visit Time:
-            <input type="time" id="visitTime">
-        </label>
+    <label>Visit Time:
+        <input type="time" id="visitTime">
+    </label>
 
-        <button onclick="filterParking()">Find Parking</button>
-    </div>
+    <button onclick="filterParking()">Find Parking</button>
+</div>
 
-    <div id="map"></div>
+<div id="map"></div>
 
-    <script>
-       // Initialize the map at Purdue coordinates
-var map = L.map('map').setView([40.4237, -86.9212], 15);
+<script>
+    // Initialize the map at Purdue coordinates
+    var map = L.map('map').setView([40.4237, -86.9212], 15);
 
-// Add OpenStreetMap tiles
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-  maxZoom: 19,
-  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-}).addTo(map);
-
-let parkingLayer = null;  // Store GeoJSON layer globally for filtering
-
-// Load GeoJSON and add to map
-fetch('data/parking_lots.geojson')
-  .then(res => res.json())
-  .then(data => {
-    parkingLayer = L.geoJSON(data, {
-      style: feature => {
-        const occ = feature.properties.occupancy;
-        let color = occ > 0.8 ? 'red' : occ > 0.5 ? 'orange' : 'green';
-        return { color: color, weight: 2, fillOpacity: 0.4 };
-      },
-      onEachFeature: (feature, layer) => {
-        const p = feature.properties;
-        const occupancy = (p.occupancy * 100).toFixed(0);
-        const center = layer.getBounds().getCenter();
-        const googleMapsURL = `https://www.google.com/maps/dir/?api=1&destination=${center.lat},${center.lng}`;
-
-        layer.bindPopup(`
-          <b>${p.name}</b><br>
-          Type: ${p.type}<br>
-          Occupancy: ${occupancy}%<br>
-          Address: ${p.address}<br>
-          <a href="${googleMapsURL}" target="_blank" rel="noopener">Get Directions</a>
-        `);
-      }
+    // Add OpenStreetMap tiles
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map);
-  });
 
-// Filtering function
-function filterParking() {
-  const passType = document.getElementById('passType').value;
-  const freeOnly = document.getElementById('freeOnly').checked;
+    // Add a simple traffic layer (free option - demo)
+    // This is just an example visualization for traffic
+    var trafficLayer = L.tileLayer('https://tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
+        attribution: 'Traffic demo tiles',
+        opacity: 0.3
+    }).addTo(map);
 
-  if (!parkingLayer) return; // wait for GeoJSON to load
+    let parkingLayer = null;  // Store GeoJSON layer globally for filtering
 
-  parkingLayer.eachLayer(layer => {
-    const p = layer.feature.properties;
-    let visible = true;
+    // Load parking lot GeoJSON
+    fetch('data/parking_lots.geojson')
+      .then(res => res.json())
+      .then(data => {
+        parkingLayer = L.geoJSON(data, {
+          style: feature => {
+            const occ = feature.properties.occupancy;
+            let color = occ > 0.8 ? 'red' : occ > 0.5 ? 'orange' : 'green';
+            return { color: color, weight: 2, fillOpacity: 0.4 };
+          },
+          onEachFeature: (feature, layer) => {
+            const p = feature.properties;
+            const occupancy = (p.occupancy * 100).toFixed(0);
+            const center = layer.getBounds().getCenter();
+            const googleMapsURL = `https://www.google.com/maps/dir/?api=1&destination=${center.lat},${center.lng}`;
 
-    if (freeOnly && !p.free) visible = false;
-    else if (!freeOnly && passType !== "None") {
-      // Show if passType matches p.type or if lot is Visitor
-      if (p.type.indexOf(passType) === -1 && p.type !== "Visitor") visible = false;
+            layer.bindPopup(`
+              <b>${p.name}</b><br>
+              Type: ${p.type}<br>
+              Occupancy: ${occupancy}%<br>
+              Address: ${p.address}<br>
+              <a href="${googleMapsURL}" target="_blank" rel="noopener">Get Directions</a>
+            `);
+          }
+        }).addTo(map);
+      });
+
+    // Load dummy construction zones
+    fetch('data/construction.geojson')
+      .then(res => res.json())
+      .then(data => {
+        L.geoJSON(data, {
+          style: {
+            color: 'yellow',
+            weight: 3,
+            dashArray: '5,5',
+            fillOpacity: 0.2
+          },
+          onEachFeature: (feature, layer) => {
+            const p = feature.properties;
+            layer.bindPopup(`<b>Construction:</b> ${p.name}<br>Expected until: ${p.endDate}`);
+          }
+        }).addTo(map);
+      });
+
+    // Filtering function
+    function filterParking() {
+      const passType = document.getElementById('passType').value;
+      const freeOnly = document.getElementById('freeOnly').checked;
+
+      if (!parkingLayer) return; // wait for GeoJSON to load
+
+      parkingLayer.eachLayer(layer => {
+        const p = layer.feature.properties;
+        let visible = true;
+
+        if (freeOnly && !p.free) visible = false;
+        else if (!freeOnly && passType !== "None") {
+          if (p.type.indexOf(passType) === -1 && p.type !== "Visitor") visible = false;
+        }
+
+        if (visible) {
+          layer.addTo(map);
+        } else {
+          map.removeLayer(layer);
+        }
+      });
     }
-
-    if (visible) {
-      layer.addTo(map);
-    } else {
-      map.removeLayer(layer);
-    }
-  });
-}
-
-    </script>
+</script>
 
 </body>
 </html>

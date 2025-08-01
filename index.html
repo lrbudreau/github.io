@@ -1,13 +1,51 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Purdue Parking Map</title>
+
+    <!-- Leaflet CSS & JS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-    <link rel="stylesheet" href="style.css">
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        h1 {
+            text-align: center;
+            margin: 10px;
+        }
+        #map {
+            height: 600px;
+            width: 100%;
+        }
+        #controls {
+            padding: 10px;
+            background: #f4f4f4;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+            border-bottom: 1px solid #ccc;
+        }
+        #controls label {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        #controls input, #controls select {
+            padding: 4px;
+        }
+    </style>
 </head>
 <body>
+
     <h1>Purdue Parking Finder</h1>
+
     <div id="controls">
         <label>Pass Type: 
             <select id="passType">
@@ -34,8 +72,56 @@
         <button onclick="filterParking()">Find Parking</button>
     </div>
 
-    <div id="map" style="height:600px;"></div>
+    <div id="map"></div>
 
-    <script src="script.js"></script>
+    <script>
+        // Initialize the map at Purdue coordinates
+        var map = L.map('map').setView([40.4237, -86.9212], 15);
+
+        // Add OpenStreetMap tiles
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        // Sample markers (buildings or parking lots)
+        var sampleLots = [
+            { name: "Grant Street Garage", coords: [40.4249, -86.9119], type: "Visitor" },
+            { name: "University Street Garage", coords: [40.4258, -86.9180], type: "A/B" },
+            { name: "South Campus Lot", coords: [40.4175, -86.9215], type: "Free" }
+        ];
+
+        var markers = [];
+
+        sampleLots.forEach(lot => {
+            let marker = L.marker(lot.coords).addTo(map)
+                .bindPopup(`<b>${lot.name}</b><br>Type: ${lot.type}`);
+            markers.push({ lot: lot, marker: marker });
+        });
+
+        // Filter function (simplified for now)
+        function filterParking() {
+            const passType = document.getElementById('passType').value;
+            const freeOnly = document.getElementById('freeOnly').checked;
+
+            markers.forEach(obj => {
+                const lot = obj.lot;
+                const marker = obj.marker;
+                let visible = true;
+
+                if (freeOnly && lot.type !== "Free") visible = false;
+                if (!freeOnly && passType !== "None" && lot.type.indexOf(passType) === -1 && lot.type !== "Visitor") {
+                    visible = false;
+                }
+
+                if (visible) {
+                    marker.addTo(map);
+                } else {
+                    map.removeLayer(marker);
+                }
+            });
+        }
+    </script>
+
 </body>
 </html>

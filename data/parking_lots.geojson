@@ -7,7 +7,8 @@
         "name": "Grant Street Garage",
         "type": "Visitor",
         "free": false,
-        "occupancy": 0.65
+        "occupancy": 0.65,
+        "address": "120 N Grant St, West Lafayette, IN 47906" 
       },
       "geometry": {
         "type": "Polygon",
@@ -26,7 +27,8 @@
         "name": "University Street Garage",
         "type": "A/B",
         "free": false,
-        "occupancy": 0.85
+        "occupancy": 0.85,
+        "address": "201 N University St, West Lafayette, IN 47907"
       },
       "geometry": {
         "type": "Polygon",
@@ -45,7 +47,8 @@
         "name": "South Campus Lot",
         "type": "Free",
         "free": true,
-        "occupancy": 0.20
+        "occupancy": 0.20,
+        "address": "775 Ahlers Dr, West Lafayette, IN 47906"
       },
       "geometry": {
         "type": "Polygon",

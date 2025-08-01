@@ -4,6 +4,26 @@
     {
       "type": "Feature",
       "properties": {
+        "name": "Harrison Street Parking Garage",
+        "type": "Permit or Visitor",
+        "free": false,
+        "occupancy": 0.60,
+        "address": "719 Clinic Dr, West Lafayette, IN 47905"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-86.91797,40.42135],
+          [-86.91777,40.42135],
+          [-86.91777,40.42095],
+          [-86.91797,40.42095],
+          [-86.91797,40.42135]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
         "name": "Grant Street Parking Garage",
         "type": "Visitor",
         "free": false,
@@ -12,12 +32,13 @@
       },
       "geometry": {
         "type": "Polygon",
-        "coordinates":[[      
-      [-86.911993, 40.425056],
-      [-86.911589, 40.425046],
-      [-86.911582, 40.424720],
-      [-86.911980, 40.424730],
-      [-86.911993, 40.425056]]]
+        "coordinates": [[
+          [-86.91199,40.42506],
+          [-86.91159,40.42506],
+          [-86.91159,40.42472],
+          [-86.91199,40.42472],
+          [-86.91199,40.42506]
+        ]]
       }
     },
     {
@@ -31,25 +52,13 @@
       },
       "geometry": {
         "type": "Polygon",
-        "coordinates":[[[-86.9128,40.4222],[-86.9123,40.4222],[-86.9123,40.4218],[-86.9128,40.4218],[-86.9128,40.4222]]]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "name": "Harrison Street Parking Garage",
-        "type": "Permit or Visitor",
-        "free": false,
-        "occupancy": 0.60,
-        "address": "719 Clinic Dr, West Lafayette, IN 47905"
-      },
-      "geometry": {
-        "type": "Polygon",
-        "coordinates":[[      [-86.9179709, 40.4213486],
-      [-86.9177709, 40.4213486],
-      [-86.9177709, 40.4209486],
-      [-86.9179709, 40.4209486],
-      [-86.9179709, 40.4213486]]]
+        "coordinates": [[
+          [-86.91280,40.42280],
+          [-86.91240,40.42280],
+          [-86.91240,40.42240],
+          [-86.91280,40.42240],
+          [-86.91280,40.42280]
+        ]]
       }
     },
     {
@@ -63,21 +72,33 @@
       },
       "geometry": {
         "type": "Polygon",
-        "coordinates":[[[-86.9200,40.4227],[-86.9195,40.4227],[-86.9195,40.4223],[-86.9200,40.4223],[-86.9200,40.4227]]]
+        "coordinates": [[
+          [-86.92000,40.42270],
+          [-86.91960,40.42270],
+          [-86.91960,40.42230],
+          [-86.92000,40.42230],
+          [-86.92000,40.42270]
+        ]]
       }
     },
     {
       "type": "Feature",
       "properties": {
-        "name": "Pierce Street Gravel Lot",
-        "type": "Visitor (gravel lot)",
+        "name": "University Street Parking Garage",
+        "type": "A/B",
         "free": false,
-        "occupancy": 0.40,
-        "address": "134 Pierce St, West Lafayette, IN 47906"
+        "occupancy": 0.45,
+        "address": "University St, West Lafayette, IN 47907"
       },
       "geometry": {
         "type": "Polygon",
-        "coordinates":[[[-86.9140,40.4228],[-86.9135,40.4228],[-86.9135,40.4224],[-86.9140,40.4224],[-86.9140,40.4228]]]
+        "coordinates": [[
+          [-86.91660,40.42570],
+          [-86.91620,40.42570],
+          [-86.91620,40.42530],
+          [-86.91660,40.42530],
+          [-86.91660,40.42570]
+        ]]
       }
     }
   ]

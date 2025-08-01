@@ -4,63 +4,72 @@
     {
       "type": "Feature",
       "properties": {
-        "name": "Grant Street Garage",
+        "name": "Grant Street Parking Garage",
+        "type": "Visitor",
+        "free": false,
+        "occupancy": 0.70,
+        "address": "120 N Grant St, West Lafayette, IN 47906"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates":[[[-86.9125,40.4249],[-86.9120,40.4249],[-86.9120,40.4245],[-86.9125,40.4245],[-86.9125,40.4249]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Wood Street Parking Garage",
         "type": "Visitor",
         "free": false,
         "occupancy": 0.65,
-        "address": "120 N Grant St, West Lafayette, IN 47906" 
+        "address": "120 S Grant St, West Lafayette, IN 47906"
       },
       "geometry": {
         "type": "Polygon",
-        "coordinates": [[
-          [-86.9125, 40.4249],
-          [-86.9120, 40.4249],
-          [-86.9120, 40.4245],
-          [-86.9125, 40.4245],
-          [-86.9125, 40.4249]
-        ]]
+        "coordinates":[[[-86.9128,40.4222],[-86.9123,40.4222],[-86.9123,40.4218],[-86.9128,40.4218],[-86.9128,40.4222]]]
       }
     },
     {
       "type": "Feature",
       "properties": {
-        "name": "University Street Garage",
-        "type": "A/B",
+        "name": "Harrison Street Parking Garage",
+        "type": "Permit or Visitor",
         "free": false,
-        "occupancy": 0.85,
-        "address": "201 N University St, West Lafayette, IN 47907"
+        "occupancy": 0.60,
+        "address": "719 Clinic Dr, West Lafayette, IN 47905"
       },
       "geometry": {
         "type": "Polygon",
-        "coordinates": [[
-          [-86.9184, 40.4258],
-          [-86.9180, 40.4258],
-          [-86.9180, 40.4254],
-          [-86.9184, 40.4254],
-          [-86.9184, 40.4258]
-        ]]
+        "coordinates":[[[-86.9178,40.4235],[-86.9173,40.4235],[-86.9173,40.4231],[-86.9178,40.4231],[-86.9178,40.4235]]]
       }
     },
     {
       "type": "Feature",
       "properties": {
-        "name": "South Campus Lot",
-        "type": "Free",
+        "name": "Northwestern Avenue Parking Garage",
+        "type": "A/B/C Permit (gov free)",
         "free": true,
-        "occupancy": 0.20,
-        "address": "775 Ahlers Dr, West Lafayette, IN 47906"
+        "occupancy": 0.50,
+        "address": "504 Northwestern Ave, West Lafayette, IN 47906"
       },
       "geometry": {
         "type": "Polygon",
-        "coordinates": [[
-          [-86.9219, 40.4178],
-          [-86.9212, 40.4178],
-          [-86.9212, 40.4173],
-          [-86.9219, 40.4173],
-          [-86.9219, 40.4178]
-        ]]
+        "coordinates":[[[-86.9200,40.4227],[-86.9195,40.4227],[-86.9195,40.4223],[-86.9200,40.4223],[-86.9200,40.4227]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Pierce Street Gravel Lot",
+        "type": "Visitor (gravel lot)",
+        "free": false,
+        "occupancy": 0.40,
+        "address": "134 Pierce St, West Lafayette, IN 47906"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates":[[[-86.9140,40.4228],[-86.9135,40.4228],[-86.9135,40.4224],[-86.9140,40.4224],[-86.9140,40.4228]]]
       }
     }
   ]
 }
-

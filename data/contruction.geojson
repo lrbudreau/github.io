@@ -1,0 +1,22 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "University St. Resurfacing",
+        "endDate": "2025-08-30"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-86.9183, 40.4252],
+          [-86.9180, 40.4252],
+          [-86.9180, 40.4248],
+          [-86.9183, 40.4248],
+          [-86.9183, 40.4252]
+        ]]
+      }
+    }
+  ]
+}

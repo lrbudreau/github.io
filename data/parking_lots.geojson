@@ -5,7 +5,7 @@
       "type": "Feature",
       "properties": {
         "name": "Harrison Street Parking Garage",
-        "type": "Permit or Visitor",
+        "type": "Paid",
         "free": false,
         "occupancy": 0.60,
         "address": "719 Clinic Dr, West Lafayette, IN 47905"
@@ -40,7 +40,7 @@
       "type": "Feature",
       "properties": {
         "name": "Grant Street Parking Garage",
-        "type": "Visitor",
+        "type": "Paid",
         "free": false,
         "occupancy": 0.70,
         "address": "120 N Grant St, West Lafayette, IN 47906"
@@ -75,7 +75,7 @@
       "type": "Feature",
       "properties": {
         "name": "Wood Street Parking Garage",
-        "type": "Visitor",
+        "type": "Paid",
         "free": false,
         "occupancy": 0.65,
         "address": "120 S Grant St, West Lafayette, IN 47906"
@@ -110,7 +110,7 @@
       "type": "Feature",
       "properties": {
         "name": "Northwestern Avenue Parking Garage",
-        "type": "A/B/C Permit (gov free)",
+        "type": "A",
         "free": true,
         "occupancy": 0.50,
         "address": "504 Northwestern Ave, West Lafayette, IN 47906"
@@ -145,7 +145,7 @@
       "type": "Feature",
       "properties": {
         "name": "University Street Parking Garage",
-        "type": "A/B",
+        "type": "A",
         "free": false,
         "occupancy": 0.45,
         "address": "University St, West Lafayette, IN 47907"

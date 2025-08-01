@@ -111,7 +111,7 @@
       "properties": {
         "name": "Northwestern Avenue Parking Garage",
         "type": "A",
-        "free": true,
+        "free": false,
         "occupancy": 0.50,
         "address": "504 Northwestern Ave, West Lafayette, IN 47906"
       },

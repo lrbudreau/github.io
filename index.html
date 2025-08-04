@@ -58,7 +58,9 @@
     </label>
 
     <label>Destination Building:
-        <input type="text" id="building" placeholder="e.g., LILY">
+        <select id="building" onchange="filterParking()">
+            <option value="">Select a building</option>
+        </select>
     </label>
 
     <label>Free Parking Only:
@@ -84,14 +86,14 @@
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map);
 
-    // Add a simple traffic layer (free option - demo)
-    // This is just an example visualization for traffic
+    // Demo traffic layer
     var trafficLayer = L.tileLayer('https://tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
         attribution: 'Traffic demo tiles',
         opacity: 0.3
     }).addTo(map);
 
-    let parkingLayer = null;  // Store GeoJSON layer globally for filtering
+    let parkingLayer = null;  
+    let buildingData = null;  
 
     // Load parking lot GeoJSON
     fetch('data/parking_lots.geojson')
@@ -120,7 +122,7 @@
         }).addTo(map);
       });
 
-    // Load dummy construction zones
+    // Load construction zones
     fetch('data/construction.geojson')
       .then(res => res.json())
       .then(data => {
@@ -138,28 +140,85 @@
         }).addTo(map);
       });
 
+    // Load buildings and populate dropdown
+    fetch('data/buildings.geojson')
+      .then(res => res.json())
+      .then(data => {
+        buildingData = data;
+        const buildingSelect = document.getElementById('building');
+        data.features.forEach(feature => {
+          const option = document.createElement('option');
+          option.value = feature.properties.name;
+          option.textContent = feature.properties.name;
+          buildingSelect.appendChild(option);
+        });
+      });
+
+    // Distance calculation
+    function distance(latlng1, latlng2) {
+        return latlng1.distanceTo(latlng2); 
+    }
+
     // Filtering function
     function filterParking() {
       const passType = document.getElementById('passType').value;
       const freeOnly = document.getElementById('freeOnly').checked;
+      const selectedBuilding = document.getElementById('building').value;
 
       if (!parkingLayer) return; // wait for GeoJSON to load
+
+      // Determine building center if one is selected
+      let buildingCenter = null;
+      if (selectedBuilding && buildingData) {
+          const feature = buildingData.features.find(
+              f => f.properties.name === selectedBuilding
+          );
+
+          if (feature) {
+              if (feature.geometry.type === "Point") {
+                  buildingCenter = L.latLng(
+                      feature.geometry.coordinates[1],
+                      feature.geometry.coordinates[0]
+                  );
+              } else {
+                  // Use polygon centroid
+                  const layer = L.geoJSON(feature);
+                  buildingCenter = layer.getBounds().getCenter();
+              }
+          }
+      }
+
+      const radius = 500; // meters
 
       parkingLayer.eachLayer(layer => {
         const p = layer.feature.properties;
         let visible = true;
 
+        // Pass type / free filter
         if (freeOnly && !p.free) visible = false;
         else if (!freeOnly && passType !== "None") {
-          if (p.type.indexOf(passType) === -1 && p.type !== "Visitor") visible = false;
+            if (p.type.indexOf(passType) === -1 && p.type !== "Visitor") visible = false;
         }
 
+        // Distance filter if building selected
+        if (buildingCenter) {
+            const center = layer.getBounds().getCenter();
+            const dist = distance(center, buildingCenter);
+            if (dist > radius) visible = false;
+        }
+
+        // Show/hide layers
         if (visible) {
-          layer.addTo(map);
+            layer.addTo(map);
         } else {
-          map.removeLayer(layer);
+            map.removeLayer(layer);
         }
       });
+
+      // Center map on building
+      if (buildingCenter) {
+          map.setView(buildingCenter, 17);
+      }
     }
 </script>
 

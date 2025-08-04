@@ -196,9 +196,16 @@
 
         // Pass type / free filter
         if (freeOnly && !p.free) visible = false;
-        else if (!freeOnly && passType !== "None") {
-            if (p.type.indexOf(passType) === -1 && p.type !== "Visitor") visible = false;
-        }
+            else if (!freeOnly && passType !== "None") {
+                // Normalize lot type string into an array
+                const lotTypes = p.type
+                    .split(/[,/]| or /i) // split by comma, slash, or 'or'
+                    .map(t => t.trim().toUpperCase()); 
+            
+                if (!lotTypes.includes(passType.toUpperCase()) && p.type !== "Visitor") {
+                    visible = false;
+                }
+            }
 
         // Distance filter if building selected
         if (buildingCenter) {

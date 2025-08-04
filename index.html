@@ -161,72 +161,86 @@
 
     // Filtering function
     function filterParking() {
-      const passType = document.getElementById('passType').value;
-      const freeOnly = document.getElementById('freeOnly').checked;
-      const selectedBuilding = document.getElementById('building').value;
+    const passType = document.getElementById('passType').value;
+    const freeOnly = document.getElementById('freeOnly').checked;
+    const selectedBuilding = document.getElementById('building').value;
 
-      if (!parkingLayer) return; // wait for GeoJSON to load
+    if (!parkingLayer) return;
 
-      // Determine building center if one is selected
-      let buildingCenter = null;
-      if (selectedBuilding && buildingData) {
-          const feature = buildingData.features.find(
-              f => f.properties.name === selectedBuilding
-          );
+    // Determine building center if selected
+    let buildingCenter = null;
+    if (selectedBuilding && buildingData) {
+        const feature = buildingData.features.find(
+            f => f.properties.name === selectedBuilding
+        );
+        if (feature) {
+            if (feature.geometry.type === "Point") {
+                buildingCenter = L.latLng(
+                    feature.geometry.coordinates[1],
+                    feature.geometry.coordinates[0]
+                );
+            } else {
+                const layer = L.geoJSON(feature);
+                buildingCenter = layer.getBounds().getCenter();
+            }
+        }
+    }
 
-          if (feature) {
-              if (feature.geometry.type === "Point") {
-                  buildingCenter = L.latLng(
-                      feature.geometry.coordinates[1],
-                      feature.geometry.coordinates[0]
-                  );
-              } else {
-                  // Use polygon centroid
-                  const layer = L.geoJSON(feature);
-                  buildingCenter = layer.getBounds().getCenter();
-              }
-          }
-      }
+    const radius = 500; // meters
 
-      const radius = 500; // meters
+    // Clear the map and rebuild filtered features
+    map.removeLayer(parkingLayer);
 
-      parkingLayer.eachLayer(layer => {
-        const p = layer.feature.properties;
-        let visible = true;
+    parkingLayer = L.geoJSON(parkingLayer.toGeoJSON(), {
+        style: feature => {
+            const occ = feature.properties.occupancy;
+            let color = occ > 0.8 ? 'red' : occ > 0.5 ? 'orange' : 'green';
+            return { color: color, weight: 2, fillOpacity: 0.4 };
+        },
+        filter: feature => {
+            const p = feature.properties;
+            let visible = true;
 
-        // Pass type / free filter
-        if (freeOnly && !p.free) visible = false;
+            // Pass type / free filter
+            if (freeOnly && !p.free) visible = false;
             else if (!freeOnly && passType !== "None") {
-                // Normalize lot type string into an array
                 const lotTypes = p.type
-                    .split(/[,/]| or /i) // split by comma, slash, or 'or'
-                    .map(t => t.trim().toUpperCase()); 
-            
+                    .split(/[,/]| or /i)
+                    .map(t => t.trim().toUpperCase());
                 if (!lotTypes.includes(passType.toUpperCase()) && p.type !== "Visitor") {
                     visible = false;
                 }
             }
 
-        // Distance filter if building selected
-        if (buildingCenter) {
+            // Distance filter if building selected
+            if (buildingCenter) {
+                const layer = L.geoJSON(feature);
+                const center = layer.getBounds().getCenter();
+                const dist = distance(center, buildingCenter);
+                if (dist > radius) visible = false;
+            }
+
+            return visible;
+        },
+        onEachFeature: (feature, layer) => {
+            const p = feature.properties;
+            const occupancy = (p.occupancy * 100).toFixed(0);
             const center = layer.getBounds().getCenter();
-            const dist = distance(center, buildingCenter);
-            if (dist > radius) visible = false;
+            const googleMapsURL = `https://www.google.com/maps/dir/?api=1&destination=${center.lat},${center.lng}`;
+            layer.bindPopup(`
+                <b>${p.name}</b><br>
+                Type: ${p.type}<br>
+                Occupancy: ${occupancy}%<br>
+                Address: ${p.address}<br>
+                <a href="${googleMapsURL}" target="_blank" rel="noopener">Get Directions</a>
+            `);
         }
+    }).addTo(map);
 
-        // Show/hide layers
-        if (visible) {
-            layer.addTo(map);
-        } else {
-            map.removeLayer(layer);
-        }
-      });
-
-      // Center map on building
-      if (buildingCenter) {
-          map.setView(buildingCenter, 17);
-      }
+    if (buildingCenter) {
+        map.setView(buildingCenter, 17);
     }
+}
 </script>
 
 </body>

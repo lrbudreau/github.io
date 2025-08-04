@@ -4,10 +4,10 @@
     {
       "type": "Feature",
       "properties": {
-        "name": "Lilly Hall of Life Sciences",
-        "abbr": "LILY",
+"name": "Lilly Hall of Life Sciences",
+"abbr": "LILY"
       },
-        "geometry": {
+      "geometry": {
         "coordinates": [
           [
             -86.91901430587009,
@@ -71,6 +71,7 @@
           ]
         ],
         "type": "LineString"
+      }
     }
   ]
 }

@@ -99,7 +99,8 @@
     fetch('data/parking_lots.geojson')
       .then(res => res.json())
       .then(data => {
-        parkingLayer = L.geoJSON(data, {
+        parkingData = data;  // Save original data
+        parkingLayer = L.geoJSON(parkingData, {
           style: feature => {
             const occ = feature.properties.occupancy;
             let color = occ > 0.8 ? 'red' : occ > 0.5 ? 'orange' : 'green';
@@ -110,7 +111,7 @@
             const occupancy = (p.occupancy * 100).toFixed(0);
             const center = layer.getBounds().getCenter();
             const googleMapsURL = `https://www.google.com/maps/dir/?api=1&destination=${center.lat},${center.lng}`;
-
+    
             layer.bindPopup(`
               <b>${p.name}</b><br>
               Type: ${p.type}<br>

@@ -58,9 +58,7 @@
     </label>
 
     <label>Destination Building:
-        <select id="building" onchange="filterParking()">
-            <option value="">Select a building</option>
-        </select>
+        <input type="text" id="building" placeholder="e.g., LILY">
     </label>
 
     <label>Free Parking Only:
@@ -86,21 +84,20 @@
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map);
 
-    // Demo traffic layer
+    // Add a simple traffic layer (free option - demo)
+    // This is just an example visualization for traffic
     var trafficLayer = L.tileLayer('https://tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
         attribution: 'Traffic demo tiles',
         opacity: 0.3
     }).addTo(map);
 
-    let parkingLayer = null;  
-    let buildingData = null;  
+    let parkingLayer = null;  // Store GeoJSON layer globally for filtering
 
     // Load parking lot GeoJSON
     fetch('data/parking_lots.geojson')
       .then(res => res.json())
       .then(data => {
-        parkingData = data;  // Save original data
-        parkingLayer = L.geoJSON(parkingData, {
+        parkingLayer = L.geoJSON(data, {
           style: feature => {
             const occ = feature.properties.occupancy;
             let color = occ > 0.8 ? 'red' : occ > 0.5 ? 'orange' : 'green';
@@ -111,7 +108,7 @@
             const occupancy = (p.occupancy * 100).toFixed(0);
             const center = layer.getBounds().getCenter();
             const googleMapsURL = `https://www.google.com/maps/dir/?api=1&destination=${center.lat},${center.lng}`;
-    
+
             layer.bindPopup(`
               <b>${p.name}</b><br>
               Type: ${p.type}<br>
@@ -123,7 +120,7 @@
         }).addTo(map);
       });
 
-    // Load construction zones
+    // Load dummy construction zones
     fetch('data/construction.geojson')
       .then(res => res.json())
       .then(data => {
@@ -141,107 +138,29 @@
         }).addTo(map);
       });
 
-    // Load buildings and populate dropdown
-    fetch('data/buildings.geojson')
-      .then(res => res.json())
-      .then(data => {
-        buildingData = data;
-        const buildingSelect = document.getElementById('building');
-        data.features.forEach(feature => {
-          const option = document.createElement('option');
-          option.value = feature.properties.name;
-          option.textContent = feature.properties.name;
-          buildingSelect.appendChild(option);
-        });
-      });
-
-    // Distance calculation
-    function distance(latlng1, latlng2) {
-        return latlng1.distanceTo(latlng2); 
-    }
-
     // Filtering function
     function filterParking() {
-    const passType = document.getElementById('passType').value;
-    const freeOnly = document.getElementById('freeOnly').checked;
-    const selectedBuilding = document.getElementById('building').value;
+      const passType = document.getElementById('passType').value;
+      const freeOnly = document.getElementById('freeOnly').checked;
 
-    if (!parkingLayer) return;
+      if (!parkingLayer) return; // wait for GeoJSON to load
 
-    // Determine building center if selected
-    let buildingCenter = null;
-    if (selectedBuilding && buildingData) {
-        const feature = buildingData.features.find(
-            f => f.properties.name === selectedBuilding
-        );
-        if (feature) {
-            if (feature.geometry.type === "Point") {
-                buildingCenter = L.latLng(
-                    feature.geometry.coordinates[1],
-                    feature.geometry.coordinates[0]
-                );
-            } else {
-                const layer = L.geoJSON(feature);
-                buildingCenter = layer.getBounds().getCenter();
-            }
+      parkingLayer.eachLayer(layer => {
+        const p = layer.feature.properties;
+        let visible = true;
+
+        if (freeOnly && !p.free) visible = false;
+        else if (!freeOnly && passType !== "None") {
+          if (p.type.indexOf(passType) === -1 && p.type !== "Visitor") visible = false;
         }
-    }
 
-    const radius = 500; // meters
-
-    // Clear the map and rebuild filtered features
-    map.removeLayer(parkingLayer);
-
-    parkingLayer = L.geoJSON(parkingLayer.toGeoJSON(), {
-        style: feature => {
-            const occ = feature.properties.occupancy;
-            let color = occ > 0.8 ? 'red' : occ > 0.5 ? 'orange' : 'green';
-            return { color: color, weight: 2, fillOpacity: 0.4 };
-        },
-        filter: feature => {
-            const p = feature.properties;
-            let visible = true;
-
-            // Pass type / free filter
-            if (freeOnly && !p.free) visible = false;
-            else if (!freeOnly && passType !== "None") {
-                const lotTypes = p.type
-                    .split(/[,/]| or /i)
-                    .map(t => t.trim().toUpperCase());
-                if (!lotTypes.includes(passType.toUpperCase()) && p.type !== "Visitor") {
-                    visible = false;
-                }
-            }
-
-            // Distance filter if building selected
-            if (buildingCenter) {
-                const layer = L.geoJSON(feature);
-                const center = layer.getBounds().getCenter();
-                const dist = distance(center, buildingCenter);
-                if (dist > radius) visible = false;
-            }
-
-            return visible;
-        },
-        onEachFeature: (feature, layer) => {
-            const p = feature.properties;
-            const occupancy = (p.occupancy * 100).toFixed(0);
-            const center = layer.getBounds().getCenter();
-            const googleMapsURL = `https://www.google.com/maps/dir/?api=1&destination=${center.lat},${center.lng}`;
-            layer.bindPopup(`
-                <b>${p.name}</b><br>
-                Type: ${p.type}<br>
-                Occupancy: ${occupancy}%<br>
-                Address: ${p.address}<br>
-                <a href="${googleMapsURL}" target="_blank" rel="noopener">Get Directions</a>
-            `);
+        if (visible) {
+          layer.addTo(map);
+        } else {
+          map.removeLayer(layer);
         }
-    }).addTo(map);
-
-    if (buildingCenter) {
-        map.setView(buildingCenter, 17);
+      });
     }
-}
 </script>
 
 </body>

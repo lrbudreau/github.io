@@ -177,7 +177,25 @@
     fetch('data/construction.geojson')
       .then(res => res.json())
       .then(data => {
-        L.geoJSON(data, {
+        // Get today's date (no time) for comparison
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+    
+        // Filter features where endDate is in the future or today
+        const filteredFeatures = data.features.filter(feature => {
+          const endDateStr = feature.properties.endDate;
+          if (!endDateStr) return true; // if no endDate, show by default
+          const endDate = new Date(endDateStr);
+          return endDate >= today;
+        });
+    
+        // Create a new GeoJSON object with filtered features
+        const filteredData = {
+          type: "FeatureCollection",
+          features: filteredFeatures
+        };
+    
+        L.geoJSON(filteredData, {
           style: {
             color: 'red',    
             weight: 3,
@@ -190,6 +208,7 @@
           }
         }).addTo(map);
       });
+
 
     let buildingLayer = null;
     let selectedBuildingLayer = null;
@@ -258,15 +277,23 @@
       if (!buildingLayer) return;
     
       buildingLayer.eachLayer(layer => {
-        // Always reset styles first
         buildingLayer.resetStyle(layer);
+      });
     
+      // If no building selected, recenter map and stop here
+      if (!selectedAbbr) {
+        map.setView([40.4237, -86.9212], 15);
+        filterParking();
+        return;
+      }
+    
+      // Highlight and zoom to selected building
+      buildingLayer.eachLayer(layer => {
         const props = layer.feature.properties;
     
-        // Only highlight and zoom if a building is selected
-        if (selectedAbbr && props.abbr === selectedAbbr) {
+        if (props.abbr === selectedAbbr) {
           const bounds = layer.getBounds();
-          const padding = window.innerWidth > 768 ? [100, 100] : [50, 50];
+          const padding = window.innerWidth > 768 ? [200, 200] : [100, 100];
           map.fitBounds(bounds, { padding });
     
           layer.setStyle({
@@ -281,6 +308,7 @@
     
       filterParking();
     }
+
 
 
 </script>

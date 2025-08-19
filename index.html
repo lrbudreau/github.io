@@ -166,19 +166,27 @@
     // Filtering function
     function filterParking() {
       const passType = document.getElementById('passType').value;
-      const freeOnly = document.getElementById('freeOnly').checked;
-
-      if (!parkingLayer) return; // wait for GeoJSON to load
-
+      const freeOnly = document.getElementById('freeOnly')?.checked; // Optional, in case checkbox is missing
+    
+      if (!parkingLayer) return;
+    
       parkingLayer.eachLayer(layer => {
         const p = layer.feature.properties;
         let visible = true;
-
-        if (freeOnly && !p.free) visible = false;
-        else if (!freeOnly && passType !== "None") {
-          if (p.type.indexOf(passType) === -1 && p.type !== "Visitor") visible = false;
+    
+        const types = Array.isArray(p.type) ? p.type : [p.type];
+    
+        // Check free parking filter
+        if (freeOnly && !p.free) {
+          visible = false;
         }
-
+    
+        // Check pass type filter
+        else if (passType !== "None") {
+          visible = types.includes(passType);
+        }
+    
+        // Show/hide on map
         if (visible) {
           layer.addTo(map);
         } else {

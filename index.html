@@ -99,34 +99,38 @@
       .then(res => res.json())
       .then(data => {
         parkingLayer = L.geoJSON(data, {
-          style: feature => {
-            const type = feature.properties.type;
-            let color;
-    
-            switch (type) {
-              case 'A':
-                color = '#1f77b4';
-                break;
-              case 'B':
-                color = '#2ca02c';
-                break;
-              case 'C':
-                color = '#ff7f0e';
-                break;
-              case 'Paid':
-                color = '#d62728';
-                break;
-              default:
-                color = '#888888';
-            }
-    
-            return {
-              color: '#000000',
-              weight: 1,
-              fillColor: color,
-              fillOpacity: 0.4
-            };
-          },
+            style: feature => {
+              const types = feature.properties.type;
+              const firstType = Array.isArray(types) ? types[0] : types;
+            
+              let color;
+              switch (firstType) {
+                case 'A':
+                  color = '#1f77b4'; // blue
+                  break;
+                case 'B':
+                  color = '#2ca02c'; // green
+                  break;
+                case 'C':
+                  color = '#ff7f0e'; // orange
+                  break;
+                case 'Paid':
+                  color = '#d62728'; // red
+                  break;
+                case 'Visitor':
+                  color = '#9467bd'; // purple (optional)
+                  break;
+                default:
+                  color = '#888888'; // gray
+              }
+            
+              return {
+                color: '#000000',
+                weight: 1,
+                fillColor: color,
+                fillOpacity: 0.4
+              };
+            },
           onEachFeature: (feature, layer) => {
             const p = feature.properties;
             const occupancy = (p.occupancy * 100).toFixed(0);
@@ -135,8 +139,7 @@
     
             layer.bindPopup(`
               <b>${p.name}</b><br>
-              Type: ${p.type}<br>
-              Occupancy: ${occupancy}%<br>
+              Type: ${Array.isArray(p.type) ? p.type.join(', ') : p.type}<br>
               Address: ${p.address}<br>
               <a href="${googleMapsURL}" target="_blank" rel="noopener">Get Directions</a>
             `);

@@ -265,7 +265,8 @@
     
         if (props.abbr === selectedAbbr) {
           const bounds = layer.getBounds();
-          map.fitBounds(bounds, { padding: [20, 20] });
+          const padding = window.innerWidth > 768 ? [100, 100] : [50, 50];
+          map.fitBounds(bounds, { padding });
     
           // Highlight selected
           layer.setStyle({

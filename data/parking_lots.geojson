@@ -43,7 +43,7 @@
       "type": "Feature",
       "properties": {
         "name": "Wood Street Parking Garage",
-        "type": "Paid",
+        "type": "A",
         "free": false,
         "address": "120 S Grant St, West Lafayette, IN 47906"
       },

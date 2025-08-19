@@ -255,20 +255,20 @@
     function buildingChanged() {
       const selectedAbbr = document.getElementById('building').value;
     
-      if (!selectedAbbr || !buildingLayer) return;
+      if (!buildingLayer) return;
     
       buildingLayer.eachLayer(layer => {
-        const props = layer.feature.properties;
-    
-        // Reset all to default
+        // Always reset styles first
         buildingLayer.resetStyle(layer);
     
-        if (props.abbr === selectedAbbr) {
+        const props = layer.feature.properties;
+    
+        // Only highlight and zoom if a building is selected
+        if (selectedAbbr && props.abbr === selectedAbbr) {
           const bounds = layer.getBounds();
           const padding = window.innerWidth > 768 ? [100, 100] : [50, 50];
           map.fitBounds(bounds, { padding });
     
-          // Highlight selected
           layer.setStyle({
             color: '#0000ff',
             weight: 4,
@@ -281,6 +281,7 @@
     
       filterParking();
     }
+
 
 </script>
 

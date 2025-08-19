@@ -5,7 +5,7 @@
       "type": "Feature",
       "properties": {
         "name": "Harrison Street Parking Garage",
-        "type": "Paid",
+        "type": ["Paid"],
         "free": false,
         "address": "719 Clinic Dr, West Lafayette, IN 47905"
       },
@@ -24,7 +24,7 @@
       "type": "Feature",
       "properties": {
         "name": "Grant Street Parking Garage",
-        "type": "Paid",
+        "type": ["Paid"],
         "free": false,
         "address": "120 N Grant St, West Lafayette, IN 47906"
       },
@@ -43,7 +43,7 @@
       "type": "Feature",
       "properties": {
         "name": "Wood Street Parking Garage",
-        "type": "A",
+        "type": ["A", "SG"],
         "free": false,
         "address": "120 S Grant St, West Lafayette, IN 47906"
       },
@@ -62,7 +62,7 @@
       "type": "Feature",
       "properties": {
         "name": "Northwestern Avenue Parking Garage",
-        "type": "A",
+        "type": ["A", "SG"],
         "free": false,
         "address": "504 Northwestern Ave, West Lafayette, IN 47906"
       },
@@ -81,7 +81,7 @@
       "type": "Feature",
       "properties": {
         "name": "University Street Parking Garage",
-        "type": "A",
+        "type": ["A", "SG"],
         "free": false,
         "address": "University St, West Lafayette, IN 47907"
       },
@@ -100,7 +100,7 @@
   "type": "Feature",
   "properties": {
     "name": "Tarkington & Wiley Hall Parking",
-    "type": "A",
+    "type": ["A", "B"],
     "free": false,
     "address": "N/A"
   },

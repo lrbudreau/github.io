@@ -28,10 +28,21 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          echo "Git status before changes:"
+          git status
+
           git add data/parking_lots.geojson
+
+          echo "Git status after adding file:"
+          git status
+
           if ! git diff --cached --quiet; then
             git commit -m "Auto-generate GeoJSON from XLSX"
-            git push https://${GITHUB_ACTOR}:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git HEAD:${GITHUB_REF#refs/heads/}
+            echo "Pushing changes..."
+            git remote set-url origin https://${GITHUB_ACTOR}:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git
+            git push origin HEAD:${GITHUB_REF#refs/heads/}
           else
             echo "No changes to commit"
           fi
+

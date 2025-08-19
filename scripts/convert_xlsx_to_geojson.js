@@ -22,7 +22,7 @@ rows.forEach(row => {
     },
     geometry: {
       type: "Polygon",
-      coordinates: coordinates
+      coordinates: [coordinates]
     }
   });
 });

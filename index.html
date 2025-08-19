@@ -49,17 +49,14 @@
 <div id="controls">
     <label>Pass Type: 
         <select id="passType" onchange="filterParking()">
-            <option value="A">A</option>
-            <option value="B">B</option>
-            <option value="C">C</option>
-            <option value="Paid">Paid</option>
-            <option value="Visitor">Visitor</option>
-            <option value="None">All</option>
+            <option value="">-- Select Pass Type --</option>
         </select>
     </label>
 
     <label>Destination Building:
-        <input type="text" id="building" placeholder="e.g., LILY">
+      <select id="building" onchange="buildingChanged()">
+        <option value="">-- Select Building --</option>
+      </select>
     </label>
 
     <label>Free Parking Only:
@@ -98,6 +95,34 @@
     fetch('data/parking_lots.geojson')
       .then(res => res.json())
       .then(data => {
+        // 1. Extract unique pass types from features
+        const typeSet = new Set();
+        data.features.forEach(feature => {
+          const types = Array.isArray(feature.properties.type)
+            ? feature.properties.type
+            : [feature.properties.type];
+          types.forEach(t => typeSet.add(t));
+        });
+    
+        // 2. Convert to sorted array
+        const sortedTypes = Array.from(typeSet).sort();
+    
+        // 3. Get the select element
+        const passTypeSelect = document.getElementById('passType');
+    
+        // 4. Add the "-- All --" option at the top
+        const allOption = document.createElement('option');
+        allOption.value = ''; // Empty string means "no filtering"
+        allOption.textContent = '-- All --';
+        passTypeSelect.appendChild(allOption);
+    
+        // 5. Add all the pass types
+        sortedTypes.forEach(type => {
+          const option = document.createElement('option');
+          option.value = type;
+          option.textContent = type;
+          passTypeSelect.appendChild(option);
+        });
         parkingLayer = L.geoJSON(data, {
             style: feature => {
               const types = feature.properties.type;
@@ -166,10 +191,29 @@
         }).addTo(map);
       });
 
+    let buildingLayer = null;
+
+    fetch('data/buildings.geojson')
+      .then(res => res.json())
+      .then(data => {
+        buildingLayer = data;
+    
+        const buildingSelect = document.getElementById('building');
+    
+        data.features.forEach(feature => {
+          const name = feature.properties.name;
+          const abbr = feature.properties.abbr;
+          const option = document.createElement('option');
+          option.value = abbr;
+          option.textContent = name;
+          buildingSelect.appendChild(option);
+        });
+      });
+
     // Filtering function
     function filterParking() {
       const passType = document.getElementById('passType').value;
-      const freeOnly = document.getElementById('freeOnly')?.checked; // Optional, in case checkbox is missing
+      const freeOnly = document.getElementById('freeOnly')?.checked;
     
       if (!parkingLayer) return;
     
@@ -179,23 +223,49 @@
     
         const types = Array.isArray(p.type) ? p.type : [p.type];
     
-        // Check free parking filter
+        // Free parking filter
         if (freeOnly && !p.free) {
           visible = false;
         }
     
-        // Check pass type filter
-        else if (passType !== "None") {
+        // Pass type filter (if one is selected)
+        else if (passType !== '') {
           visible = types.includes(passType);
         }
     
-        // Show/hide on map
+        // Show/hide the layer based on filters
         if (visible) {
           layer.addTo(map);
         } else {
           map.removeLayer(layer);
         }
       });
+    }
+    
+    function buildingChanged() {
+      const buildingAbbr = document.getElementById('building').value;
+    
+      if (!buildingLayer || !buildingAbbr) return;
+    
+      const feature = buildingLayer.features.find(f => f.properties.abbr === buildingAbbr);
+      if (!feature) return;
+    
+      // Calculate bounds from building geometry and zoom to it
+      let coords = feature.geometry.coordinates;
+    
+      // buildings.geojson uses LineString geometry in your example,
+      // wrap coordinates in array if needed
+      if (feature.geometry.type === "LineString") {
+        coords = [coords]; // make it MultiLineString-like
+      }
+    
+      // Convert to Leaflet LatLngs (GeoJSON is [lng, lat])
+      const latLngs = coords.flat().map(c => [c[1], c[0]]);
+    
+      const bounds = L.latLngBounds(latLngs);
+      map.fitBounds(bounds.pad(1)); // pad a bit for better view
+    
+      filterParking();
     }
 </script>
 

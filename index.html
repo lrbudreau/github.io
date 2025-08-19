@@ -98,22 +98,40 @@
       .then(res => res.json())
       .then(data => {
         parkingLayer = L.geoJSON(data, {
-            style: feature => {
-              const occ = feature.properties.occupancy;
-              let color = occ > 0.8 ? 'red' : occ > 0.5 ? 'orange' : 'green';
-              return {
-                color: color,      
-                weight: 2,      
-                fillColor: color,      
-                fillOpacity: 0.4    
-              };
-            },
+          style: feature => {
+            const type = feature.properties.type;
+            let color;
+    
+            switch (type) {
+              case 'A':
+                color = '#1f77b4';
+                break;
+              case 'B':
+                color = '#2ca02c';
+                break;
+              case 'C':
+                color = '#ff7f0e';
+                break;
+              case 'Paid':
+                color = '#d62728';
+                break;
+              default:
+                color = '#888888';
+            }
+    
+            return {
+              color: '#000000',
+              weight: 1,
+              fillColor: color,
+              fillOpacity: 0.4
+            };
+          },
           onEachFeature: (feature, layer) => {
             const p = feature.properties;
             const occupancy = (p.occupancy * 100).toFixed(0);
             const center = layer.getBounds().getCenter();
             const googleMapsURL = `https://www.google.com/maps/dir/?api=1&destination=${center.lat},${center.lng}`;
-
+    
             layer.bindPopup(`
               <b>${p.name}</b><br>
               Type: ${p.type}<br>
@@ -124,6 +142,7 @@
           }
         }).addTo(map);
       });
+
 
     // Load dummy construction zones
     fetch('data/construction.geojson')

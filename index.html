@@ -192,14 +192,14 @@
       });
 
     let buildingLayer = null;
-
+    let selectedBuildingLayer = null;
+    
+    // Fetch and add buildings to the map
     fetch('data/buildings.geojson')
       .then(res => res.json())
       .then(data => {
-        buildingLayer = data;
-    
+        // Populate dropdown
         const buildingSelect = document.getElementById('building');
-    
         data.features.forEach(feature => {
           const name = feature.properties.name;
           const abbr = feature.properties.abbr;
@@ -208,7 +208,17 @@
           option.textContent = name;
           buildingSelect.appendChild(option);
         });
+    
+        // Create Leaflet GeoJSON layer
+        buildingLayer = L.geoJSON(data, {
+          style: {
+            color: '#666',
+            weight: 2,
+            opacity: 0.6
+          }
+        }).addTo(map);
       });
+
 
     // Filtering function
     function filterParking() {
@@ -243,30 +253,34 @@
     }
     
     function buildingChanged() {
-      const buildingAbbr = document.getElementById('building').value;
+      const selectedAbbr = document.getElementById('building').value;
     
-      if (!buildingLayer || !buildingAbbr) return;
+      if (!selectedAbbr || !buildingLayer) return;
     
-      const feature = buildingLayer.features.find(f => f.properties.abbr === buildingAbbr);
-      if (!feature) return;
+      buildingLayer.eachLayer(layer => {
+        const props = layer.feature.properties;
     
-      // Calculate bounds from building geometry and zoom to it
-      let coords = feature.geometry.coordinates;
+        // Reset all to default
+        buildingLayer.resetStyle(layer);
     
-      // buildings.geojson uses LineString geometry in your example,
-      // wrap coordinates in array if needed
-      if (feature.geometry.type === "LineString") {
-        coords = [coords]; // make it MultiLineString-like
-      }
+        if (props.abbr === selectedAbbr) {
+          const bounds = layer.getBounds();
+          map.fitBounds(bounds, { padding: [20, 20] });
     
-      // Convert to Leaflet LatLngs (GeoJSON is [lng, lat])
-      const latLngs = coords.flat().map(c => [c[1], c[0]]);
+          // Highlight selected
+          layer.setStyle({
+            color: '#0000ff',
+            weight: 4,
+            opacity: 1
+          });
     
-      const bounds = L.latLngBounds(latLngs);
-      map.fitBounds(bounds.pad(1)); // pad a bit for better view
+          selectedBuildingLayer = layer;
+        }
+      });
     
       filterParking();
     }
+
 </script>
 
 </body>

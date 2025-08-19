@@ -1,9 +1,7 @@
 name: Convert XLSX to GeoJSON
 
 on:
-  push:
-    paths:
-      - 'data/parking.xlsx'
+  workflow_dispatch:  # Manual trigger via GitHub Actions UI
 
 jobs:
   convert:

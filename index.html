@@ -98,11 +98,16 @@
       .then(res => res.json())
       .then(data => {
         parkingLayer = L.geoJSON(data, {
-          style: feature => {
-            const occ = feature.properties.occupancy;
-            let color = occ > 0.8 ? 'red' : occ > 0.5 ? 'orange' : 'green';
-            return { color: color, weight: 2, fillOpacity: 0.4 };
-          },
+            style: feature => {
+              const occ = feature.properties.occupancy;
+              let color = occ > 0.8 ? 'red' : occ > 0.5 ? 'orange' : 'green';
+              return {
+                color: color,      
+                weight: 2,      
+                fillColor: color,      
+                fillOpacity: 0.4    
+              };
+            },
           onEachFeature: (feature, layer) => {
             const p = feature.properties;
             const occupancy = (p.occupancy * 100).toFixed(0);

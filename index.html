@@ -275,8 +275,9 @@
     
       if (!buildingLayer) return;
     
-      // Reset style for all buildings
-      buildingLayer.eachFeature(function (layer) {
+      // Reset style for all buildings, removing any previous highlight
+      buildingLayer.eachFeature(layer => {
+        layer.options.highlighted = false; // custom flag
         buildingLayer.resetStyle(layer);
       });
     
@@ -287,7 +288,7 @@
       }
     
       // Search for the selected building and zoom to it
-      buildingLayer.eachFeature(function (layer) {
+      buildingLayer.eachFeature(layer => {
         const props = layer.feature?.properties;
         if (!props) return;
     
@@ -296,11 +297,15 @@
           const padding = window.innerWidth > 768 ? [200, 200] : [100, 100];
           map.fitBounds(bounds, { padding });
     
+          // Custom style for highlighted building
           layer.setStyle({
             color: '#0000ff',
             weight: 2,
             opacity: 1
           });
+    
+          // Mark as highlighted so Esri doesn’t reset it
+          layer.options.highlighted = true;
     
           selectedBuildingLayer = layer;
         }

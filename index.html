@@ -61,7 +61,12 @@
         <option value="">-- Select Building --</option>
       </select>
     </label>
-
+    
+    <label>
+      Handicap Parking:
+      <input type="checkbox" id="handicapToggle" checked onchange="toggleHandicapParking()">
+    </label>
+    
     <label>Free Parking Only:
         <input type="checkbox" id="freeOnly" onchange="filterParking()">
     </label>
@@ -240,13 +245,13 @@
       }
     }).addTo(map);
 
+    let handicapLayer = null;
     // Load handicap parking KML layer
-    omnivore.kml('https://purdueuniversity.maps.arcgis.com/sharing/rest/content/items/13158cca51cf4190aaa002bde42f816d/data')
+    handicapLayer = omnivore.kml('https://purdueuniversity.maps.arcgis.com/sharing/rest/content/items/13158cca51cf4190aaa002bde42f816d/data')
       .on('ready', function() {
         this.eachLayer(function(layer) {
           if (layer instanceof L.Marker) {
             layer.setIcon(handicapIcon);
-            // Optional: add a popup or tooltip
             layer.bindPopup('Handicap Accessible Parking');
           }
         });
@@ -331,12 +336,22 @@
     }
 
     const handicapIcon = L.icon({
-      iconUrl: 'https://upload.wikimedia.org/wikipedia/commons/6/6b/Font_Awesome_5_solid_handicap.svg',
+      iconUrl: 'https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/svgs/solid/wheelchair.svg',
       iconSize: [30, 30], 
       iconAnchor: [15, 30], 
       popupAnchor: [0, -30] 
     });
 
+    function toggleHandicapParking() {
+      const show = document.getElementById('handicapToggle').checked;
+      if (handicapLayer) {
+        if (show) {
+          map.addLayer(handicapLayer);
+        } else {
+          map.removeLayer(handicapLayer);
+        }
+      }
+    }
 
 </script>
 

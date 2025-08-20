@@ -236,12 +236,11 @@ const legendDiv = document.getElementById('legend');
       typeSet.clear();
 
     if (featureCollection.features.length > 0) {
-      const geojsonLayer = L.geoJSON(featureCollection, {
+      const geojsonLayer = L.geoJSON(featureCollection.features, {
         style: feature => getLotStyle(feature.properties.LOT_PERM),
         onEachFeature: (feature, layer) => {
           const props = feature.properties;
     
-          // Add LOT_PERM types to set (split in case multiple)
           const types = props.LOT_PERM
             ? props.LOT_PERM.split(/[,\s]+/).map(t => t.trim()).filter(Boolean)
             : ['Other'];
@@ -258,12 +257,15 @@ const legendDiv = document.getElementById('legend');
             <a href="${googleMapsURL}" target="_blank" rel="noopener">Get Directions</a>
           `);
     
+          // Optional: better user interaction
+          layer.on('click', () => layer.openPopup());
+          layer.on('mouseover', () => layer.bringToFront());
+    
           allParkingLayers.push(layer);
         }
       }).addTo(map);
-    } else {
-      console.warn("No parking features found.");
     }
+
 
 
       // Populate dropdown after data is loaded

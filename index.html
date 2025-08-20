@@ -225,7 +225,7 @@ const legendDiv = document.getElementById('legend');
       url: 'https://services1.arcgis.com/mLNdQKiKsj5Z5YMN/arcgis/rest/services/Parking2020/FeatureServer/0'
     })
     .query()
-    .where('1=1')
+    .where("PTYPE = 'Garage1'")
     .run((error, featureCollection) => {
       if (error) {
         console.error('Error loading parking data:', error);

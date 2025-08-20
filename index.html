@@ -342,12 +342,21 @@
     defaultOpt.textContent = '-- Select Building --';
     buildingSelect.appendChild(defaultOpt);
 
+    const maxLength = 35;
+    
     sorted.forEach(feature => {
       const abbr = feature.properties.BLDG_ABBR;
       const name = feature.properties.BUILDING_N;
       const option = document.createElement('option');
       option.value = abbr;
-      option.textContent = `(${abbr}) ${name}`;
+    
+      const displayName = `(${abbr}) ${name}`;
+      option.title = displayName;
+    
+      option.textContent = displayName.length > maxLength
+        ? displayName.slice(0, maxLength) + '…'
+        : displayName;
+    
       buildingSelect.appendChild(option);
     });
   });

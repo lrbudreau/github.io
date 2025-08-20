@@ -102,88 +102,90 @@
         opacity: 0.3
     }).addTo(map);
 
-    let parkingLayer = null;  // Store GeoJSON layer globally for filtering
-
-    // Load parking lot GeoJSON
-    fetch('data/parking_lots.geojson')
-      .then(res => res.json())
-      .then(data => {
-        // 1. Extract unique pass types from features
-        const typeSet = new Set();
-        data.features.forEach(feature => {
-          const types = Array.isArray(feature.properties.type)
-            ? feature.properties.type
-            : [feature.properties.type];
-          types.forEach(t => typeSet.add(t));
-        });
+    // Load parking lot data from ArcGIS FeatureServer
+    const passTypeSelect = document.getElementById('passType');
     
-        // 2. Convert to sorted array
-        const sortedTypes = Array.from(typeSet).sort();
+    // Set to collect unique pass types (LOT_PERM)
+    const typeSet = new Set();
     
-        // 3. Get the select element
-        const passTypeSelect = document.getElementById('passType');
+    // Temporary storage for layers to allow filtering
+    let allParkingLayers = [];
     
-        // 4. Add the "-- All --" option at the top
-        const allOption = document.createElement('option');
-        allOption.value = ''; // Empty string means "no filtering"
-        allOption.textContent = '-- All --';
-        passTypeSelect.appendChild(allOption);
+    // Define the style function using LOT_PERM
+    function getLotStyle(lotPerm) {
+        let color;
+        switch (lotPerm) {
+            case 'A':
+                color = '#1f77b4'; // blue
+                break;
+            case 'B':
+                color = '#2ca02c'; // green
+                break;
+            case 'C':
+                color = '#ff7f0e'; // orange
+                break;
+            case 'Paid':
+                color = '#d62728'; // red
+                break;
+            case 'Visitor':
+                color = '#9467bd'; // purple
+                break;
+            default:
+                color = '#888888'; // gray
+        }
     
-        // 5. Add all the pass types
-        sortedTypes.forEach(type => {
-          const option = document.createElement('option');
-          option.value = type;
-          option.textContent = type;
-          passTypeSelect.appendChild(option);
-        });
-        parkingLayer = L.geoJSON(data, {
-            style: feature => {
-              const types = feature.properties.type;
-              const firstType = Array.isArray(types) ? types[0] : types;
-            
-              let color;
-              switch (firstType) {
-                case 'A':
-                  color = '#1f77b4'; // blue
-                  break;
-                case 'B':
-                  color = '#2ca02c'; // green
-                  break;
-                case 'C':
-                  color = '#ff7f0e'; // orange
-                  break;
-                case 'Paid':
-                  color = '#d62728'; // red
-                  break;
-                case 'Visitor':
-                  color = '#9467bd'; // purple (optional)
-                  break;
-                default:
-                  color = '#888888'; // gray
-              }
-            
-              return {
-                color: '#000000',
-                weight: 1,
-                fillColor: color,
-                fillOpacity: 0.4
-              };
-            },
-          onEachFeature: (feature, layer) => {
-            const p = feature.properties;
-            const occupancy = (p.occupancy * 100).toFixed(0);
+        return {
+            color: '#000000',
+            weight: 1,
+            fillColor: color,
+            fillOpacity: 0.4
+        };
+    }
+    
+    // Add "-- All --" option first
+    const allOption = document.createElement('option');
+    allOption.value = '';
+    allOption.textContent = '-- All --';
+    passTypeSelect.appendChild(allOption);
+    
+    // Load ArcGIS Feature Layer
+    parkingLayer = L.esri.featureLayer({
+        url: 'https://services1.arcgis.com/mLNdQKiKsj5Z5YMN/arcgis/rest/services/Parking2020/FeatureServer/0',
+        style: function (feature) {
+            return getLotStyle(feature.properties.LOT_PERM);
+        },
+        onEachFeature: function (feature, layer) {
+            const props = feature.properties;
+    
+            // Collect unique LOT_PERM types for the dropdown
+            if (props.LOT_PERM) {
+                typeSet.add(props.LOT_PERM);
+            }
+    
             const center = layer.getBounds().getCenter();
             const googleMapsURL = `https://www.google.com/maps/dir/?api=1&destination=${center.lat},${center.lng}`;
     
             layer.bindPopup(`
-              <b>${p.name}</b><br>
-              Type: ${Array.isArray(p.type) ? p.type.join(', ') : p.type}<br>
-              Address: ${p.address}<br>
-              <a href="${googleMapsURL}" target="_blank" rel="noopener">Get Directions</a>
+                <b>${props.LOT_NAME || 'Parking Lot'}</b><br>
+                Type: ${props.LOT_PERM || 'Unknown'}<br>
+                Address: ${props.LOT_ADDR || 'Not Available'}<br>
+                <a href="${googleMapsURL}" target="_blank" rel="noopener">Get Directions</a>
             `);
-          }
-        }).addTo(map);
-      });
+    
+            allParkingLayers.push(layer);
+        }
+    }).addTo(map);
+    
+    // After all features are loaded, populate the dropdown
+    parkingLayer.once('load', function () {
+        const sortedTypes = Array.from(typeSet).sort();
+        sortedTypes.forEach(type => {
+            const option = document.createElement('option');
+            option.value = type;
+            option.textContent = type;
+            passTypeSelect.appendChild(option);
+        });
+    });
 
 
     // Load dummy construction zones
@@ -286,35 +288,30 @@
 
     // Filtering function
     function filterParking() {
-      const passType = document.getElementById('passType').value;
-      const freeOnly = document.getElementById('freeOnly')?.checked;
+        const selectedType = document.getElementById('passType').value;
+        const freeOnly = document.getElementById('freeOnly')?.checked;
     
-      if (!parkingLayer) return;
+        allParkingLayers.forEach(layer => {
+            const props = layer.feature?.properties;
+            const types = props?.LOT_PERM ? [props.LOT_PERM] : [];
+            let visible = true;
     
-      parkingLayer.eachLayer(layer => {
-        const p = layer.feature.properties;
-        let visible = true;
+            if (freeOnly && !props?.FREE) {
+                visible = false;
+            }
     
-        const types = Array.isArray(p.type) ? p.type : [p.type];
+            if (selectedType && !types.includes(selectedType)) {
+                visible = false;
+            }
     
-        // Free parking filter
-        if (freeOnly && !p.free) {
-          visible = false;
-        }
-    
-        // Pass type filter (if one is selected)
-        else if (passType !== '') {
-          visible = types.includes(passType);
-        }
-    
-        // Show/hide the layer based on filters
-        if (visible) {
-          layer.addTo(map);
-        } else {
-          map.removeLayer(layer);
-        }
-      });
+            if (visible) {
+                map.addLayer(layer);
+            } else {
+                map.removeLayer(layer);
+            }
+        });
     }
+
     
     function buildingChanged() {
       const selectedAbbr = document.getElementById('building').value;

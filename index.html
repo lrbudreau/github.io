@@ -98,14 +98,6 @@
       Handicap Parking:
       <input type="checkbox" id="handicapToggle" checked onchange="toggleHandicapParking()">
     </label>
-    
-    <label>Free Parking Only:
-        <input type="checkbox" id="freeOnly" onchange="filterParking()">
-    </label>
-
-    <label>Visit Time:
-        <input type="time" id="visitTime">
-    </label>
 
     <button onclick="filterParking()">Find Parking</button>
 </div>
@@ -388,7 +380,6 @@ const legendDiv = document.getElementById('legend');
   // Filtering function
   function filterParking() {
     const selectedType = passTypeSelect.value;
-    const freeOnly = document.getElementById('freeOnly')?.checked;
     const selectedAbbr = buildingSelect.value;
 
     let visibleCount = 0;
@@ -412,10 +403,6 @@ const legendDiv = document.getElementById('legend');
         : ['Other'];
 
       let visible = true;
-
-      if (freeOnly && !props?.FREE) {
-        visible = false;
-      }
 
       if (selectedType && !types.includes(selectedType)) {
         visible = false;

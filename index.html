@@ -227,11 +227,9 @@
       },
       onEachFeature: function (feature, layer) {
         const props = feature.properties;
-        
         const name = props.BUILDING_N || "Unknown";
         const abbr = props.BLDG_ABBR || name;
     
-        // Populate dropdown
         const option = document.createElement('option');
         option.value = abbr;
         option.textContent = name;
@@ -277,20 +275,21 @@
     
       if (!buildingLayer) return;
     
-      buildingLayer.eachLayer(layer => {
+      // Reset style for all buildings
+      buildingLayer.eachFeature(function (layer) {
         buildingLayer.resetStyle(layer);
       });
     
-      // If no building selected, recenter map and stop here
       if (!selectedAbbr) {
         map.setView([40.4237, -86.9212], 15);
         filterParking();
         return;
       }
     
-      // Highlight and zoom to selected building
-      buildingLayer.eachLayer(layer => {
-        const props = layer.feature.properties;
+      // Search for the selected building and zoom to it
+      buildingLayer.eachFeature(function (layer) {
+        const props = layer.feature?.properties;
+        if (!props) return;
     
         if (props.BLDG_ABBR === selectedAbbr) {
           const bounds = layer.getBounds();
@@ -309,8 +308,6 @@
     
       filterParking();
     }
-
-
 
 </script>
 

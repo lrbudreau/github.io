@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <script src="https://unpkg.com/esri-leaflet/dist/esri-leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-omnivore@0.3.4/leaflet-omnivore.min.js"></script>
 
 
     <style>
@@ -238,6 +239,19 @@
         buildingFeatures.push(feature); // collect for dropdown
       }
     }).addTo(map);
+
+    // Load handicap parking KML layer
+    omnivore.kml('https://purdueuniversity.maps.arcgis.com/sharing/rest/content/items/13158cca51cf4190aaa002bde42f816d/data')
+      .on('ready', function() {
+        this.eachLayer(function(layer) {
+          if (layer instanceof L.Marker) {
+            layer.setIcon(handicapIcon);
+            // Optional: add a popup or tooltip
+            layer.bindPopup('Handicap Accessible Parking');
+          }
+        });
+      })
+      .addTo(map);
     
     // Wait until all features are loaded before populating the select
     buildingLayer.on('load', function() {
@@ -315,6 +329,13 @@
       buildingLayer.setStyle(buildingLayer.options.style); // reapply style
       filterParking();
     }
+
+    const handicapIcon = L.icon({
+      iconUrl: 'https://upload.wikimedia.org/wikipedia/commons/6/6b/Font_Awesome_5_solid_handicap.svg',
+      iconSize: [30, 30], 
+      iconAnchor: [15, 30], 
+      popupAnchor: [0, -30] 
+    });
 
 
 </script>

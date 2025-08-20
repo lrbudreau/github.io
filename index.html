@@ -235,31 +235,36 @@ const legendDiv = document.getElementById('legend');
       allParkingLayers = [];
       typeSet.clear();
 
-      const geojsonLayer = L.geoJSON(featureCollection, {
-        style: feature => getLotStyle(feature.properties.LOT_PERM),
-        onEachFeature: (feature, layer) => {
-          const props = feature.properties;
-
-          // Add LOT_PERM types to set (split in case multiple)
-          const types = props.LOT_PERM
-            ? props.LOT_PERM.split(/[,\s]+/).map(t => t.trim()).filter(Boolean)
-            : ['Other'];
-
-          types.forEach(t => typeSet.add(t));
-
-          const center = layer.getBounds().getCenter();
-          const googleMapsURL = `https://www.google.com/maps/dir/?api=1&destination=${center.lat},${center.lng}`;
-
-          layer.bindPopup(`
-            <b>${props.LOT_NAME || 'Parking Lot'}</b><br>
-            Type: ${types.join(', ')}<br>
-            Description: ${props.LotDesc || 'Not Available'}<br>
-            <a href="${googleMapsURL}" target="_blank" rel="noopener">Get Directions</a>
-          `);
-
-          allParkingLayers.push(layer);
+        if (featureCollection.features.length > 0) {
+          const firstFeature = featureCollection.features[0];
+          const geojsonLayer = L.geoJSON(firstFeature, {
+            style: feature => getLotStyle(feature.properties.LOT_PERM),
+            onEachFeature: (feature, layer) => {
+              const props = feature.properties;
+        
+              // Add LOT_PERM types to set (split in case multiple)
+              const types = props.LOT_PERM
+                ? props.LOT_PERM.split(/[,\s]+/).map(t => t.trim()).filter(Boolean)
+                : ['Other'];
+        
+              types.forEach(t => typeSet.add(t));
+        
+              const center = layer.getBounds().getCenter();
+              const googleMapsURL = `https://www.google.com/maps/dir/?api=1&destination=${center.lat},${center.lng}`;
+        
+              layer.bindPopup(`
+                <b>${props.LOT_NAME || 'Parking Lot'}</b><br>
+                Type: ${types.join(', ')}<br>
+                Description: ${props.LotDesc || 'Not Available'}<br>
+                <a href="${googleMapsURL}" target="_blank" rel="noopener">Get Directions</a>
+              `);
+        
+              allParkingLayers.push(layer);
+            }
+          }).addTo(map);
+        } else {
+          console.warn("No parking features found.");
         }
-      }).addTo(map);
 
       // Populate dropdown after data is loaded
       const sortedTypes = Array.from(typeSet).sort();

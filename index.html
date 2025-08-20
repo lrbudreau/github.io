@@ -50,27 +50,23 @@
       }
 
       #legend {
-        background: white;
-        padding: 6px;
-        font-family: Arial, sans-serif;
         font-size: 14px;
-        line-height: 18px;
+        padding: 10px;
+        max-width: 300px;
+      }
+    
+      .legend-entry {
+        display: inline-flex;
+        align-items: center;
+        margin: 4px 8px 4px 0;
       }
     
       .legend-item {
+        width: 14px;
+        height: 14px;
         display: inline-block;
-        width: 16px;
-        height: 16px;
         margin-right: 6px;
-        vertical-align: middle;
         border: 1px solid #000;
-      }
-    
-      #noLotsMessage {
-        color: red;
-        font-weight: bold;
-        margin-top: 10px;
-        display: none;
       }
     </style>
 </head>
@@ -170,24 +166,34 @@
   }
 
   // Populate legend dynamically
-  function updateLegend() {
-    // Clear existing legend
-    legendDiv.innerHTML = '<strong>Legend:</strong><br>';
-    // Sort types alphabetically with 'Other' last
-    const sortedTypes = Array.from(typeSet).sort((a,b) => {
-      if (a === 'Other') return 1;
-      if (b === 'Other') return -1;
-      return a.localeCompare(b);
-    });
-    sortedTypes.forEach(type => {
-      const color = generateColor(type);
-      const span = document.createElement('span');
-      span.className = 'legend-item';
-      span.style.backgroundColor = color;
-      legendDiv.appendChild(span);
-      legendDiv.appendChild(document.createTextNode(` ${type}`));
-    });
-  }
+    function updateLegend() {
+      legendDiv.innerHTML = '<strong>Legend:</strong><br>';
+    
+      const sortedTypes = Array.from(typeSet).sort((a,b) => {
+        if (a === 'Other') return 1;
+        if (b === 'Other') return -1;
+        return a.localeCompare(b);
+      });
+    
+      sortedTypes.forEach(type => {
+        const color = generateColor(type);
+        
+        const item = document.createElement('div');
+        item.className = 'legend-entry';
+    
+        const span = document.createElement('span');
+        span.className = 'legend-item';
+        span.style.backgroundColor = color;
+    
+        const label = document.createElement('span');
+        label.textContent = ` ${type}`;
+    
+        item.appendChild(span);
+        item.appendChild(label);
+        legendDiv.appendChild(item);
+      });
+    }
+
 
   // Initialize "No matching lots" message style
   noLotsMessage.style.display = 'none';

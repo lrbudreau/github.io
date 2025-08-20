@@ -155,36 +155,50 @@
             return getLotStyle(feature.properties.LOT_PERM);
         },
         onEachFeature: function (feature, layer) {
-            const props = feature.properties;
-    
-            // Collect unique LOT_PERM types for the dropdown
-            if (props.LOT_PERM) {
-                typeSet.add(props.LOT_PERM);
-            }
-    
-            const center = layer.getBounds().getCenter();
-            const googleMapsURL = `https://www.google.com/maps/dir/?api=1&destination=${center.lat},${center.lng}`;
-    
-            layer.bindPopup(`
-                <b>${props.LOT_NAME || 'Parking Lot'}</b><br>
-                Type: ${props.LOT_PERM || 'Unknown'}<br>
-                Address: ${props.LOT_ADDR || 'Not Available'}<br>
-                <a href="${googleMapsURL}" target="_blank" rel="noopener">Get Directions</a>
-            `);
-    
-            allParkingLayers.push(layer);
+          const props = feature.properties;
+        
+          // Split LOT_PERM into array and clean entries
+          if (props.LOT_PERM) {
+            const types = props.LOT_PERM
+              .split(/[,\s]+/)
+              .map(t => t.trim())
+              .filter(Boolean);
+        
+            // Add each unique type to the Set
+            types.forEach(t => typeSet.add(t));
+          }
+        
+          const center = layer.getBounds().getCenter();
+          const googleMapsURL = `https://www.google.com/maps/dir/?api=1&destination=${center.lat},${center.lng}`;
+        
+          layer.bindPopup(`
+            <b>${props.LOT_NAME || 'Parking Lot'}</b><br>
+            Type: ${(props.LOT_PERM || 'Unknown').split(/[,\s]+/).join(', ')}<br>
+            Description: ${props.LotDesc || 'Not Available'}<br>
+            <a href="${googleMapsURL}" target="_blank" rel="noopener">Get Directions</a>
+          `);
+        
+          allParkingLayers.push(layer);
         }
     }).addTo(map);
     
     // After all features are loaded, populate the dropdown
     parkingLayer.once('load', function () {
-        const sortedTypes = Array.from(typeSet).sort();
-        sortedTypes.forEach(type => {
-            const option = document.createElement('option');
-            option.value = type;
-            option.textContent = type;
-            passTypeSelect.appendChild(option);
-        });
+      const sortedTypes = Array.from(typeSet).sort();
+    
+      // Add "-- All --" option first
+      const allOption = document.createElement('option');
+      allOption.value = '';
+      allOption.textContent = '-- All --';
+      passTypeSelect.appendChild(allOption);
+    
+      // Add dynamic options
+      sortedTypes.forEach(type => {
+        const option = document.createElement('option');
+        option.value = type;
+        option.textContent = type;
+        passTypeSelect.appendChild(option);
+      });
     });
 
 
@@ -293,7 +307,9 @@
     
         allParkingLayers.forEach(layer => {
             const props = layer.feature?.properties;
-            const types = props?.LOT_PERM ? [props.LOT_PERM] : [];
+            const types = props?.LOT_PERM
+              ? props.LOT_PERM.split(/[,\s]+/).map(s => s.trim()).filter(Boolean)
+              : [];
             let visible = true;
     
             if (freeOnly && !props?.FREE) {

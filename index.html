@@ -43,32 +43,31 @@
         #controls input, #controls select {
             padding: 4px;
         }
-        
       .leaflet-marker-icon.leaflet-zoom-animated {
         max-width: 24px !important;
         max-height: 24px !important;
       }
-
-      #legend {
-        font-size: 14px;
-        padding: 10px;
-        max-width: 300px;
-      }
-    
-      .legend-entry {
-        display: inline-flex;
-        align-items: center;
-        margin: 4px 8px 4px 0;
-      }
-    
-      .legend-item {
-        width: 14px;
-        height: 14px;
-        display: inline-block;
-        margin-right: 6px;
-        border: 1px solid #000;
-      }
-        
+        .leaflet-control .legend {
+          background: white;
+          padding: 10px;
+          border-radius: 5px;
+          box-shadow: 0 0 6px rgba(0,0,0,0.2);
+          font-size: 14px;
+          line-height: 1.5;
+          max-width: 250px;
+        }
+        .legend-entry {
+          display: flex;
+          align-items: center;
+          margin: 4px 0;
+        }
+        .legend-item {
+          width: 14px;
+          height: 14px;
+          display: inline-block;
+          margin-right: 6px;
+          border: 1px solid #000;
+        }   
         #building {
           max-width: 100%;
           width: 100%;
@@ -81,8 +80,6 @@
 <body>
 
 <h1>Purdue Parking Finder</h1>
-<div id="legend"></div>
-
 <div id="controls">
     <label>Pass Type: 
         <select id="passType" onchange="filterParking()">
@@ -124,6 +121,22 @@
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
   }).addTo(map);
 
+
+// Create a Leaflet control for the legend (bottom left)
+const legendControl = L.control({ position: 'bottomleft' });
+
+legendControl.onAdd = function(map) {
+  const div = L.DomUtil.create('div', 'info legend');
+  div.id = 'legend';
+  div.innerHTML = '<strong>Legend:</strong><br>';
+  return div;
+};
+
+legendControl.addTo(map);
+
+const legendDiv = document.getElementById('legend'); // Now safe to use in updateLegend()
+
+    
   // Add simple traffic layer (demo)
   var trafficLayer = L.tileLayer('https://tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
       attribution: 'Traffic demo tiles',

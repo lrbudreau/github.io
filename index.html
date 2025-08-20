@@ -10,7 +10,12 @@
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <script src="https://unpkg.com/esri-leaflet/dist/esri-leaflet.js"></script>
     <script src="https://unpkg.com/leaflet-omnivore@0.3.4/leaflet-omnivore.min.js"></script>
-
+    <!-- Select2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <!-- jQuery (required for Select2) -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Select2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
     <style>
         body {
@@ -88,11 +93,10 @@
         </select>
     </label>
 
-    <label>Destination Building:
-      <select id="building" onchange="buildingChanged()">
-        <option value="">-- Select Building --</option>
-      </select>
-    </label>
+    <label for="building">Destination Building:</label>
+    <select id="building" class="select2">
+      <option value="">-- Select Building --</option>
+    </select>
     
     <label>
       Handicap Parking:
@@ -105,6 +109,13 @@
 <div id="map"></div>
 
 <script>
+
+$(document).ready(function() {
+    $('#building').select2({
+      placeholder: "-- Select Building --",
+      allowClear: true,
+    });
+  });
   // Initialize the map at Purdue coordinates
   var map = L.map('map').setView([40.4237, -86.9212], 15);
 

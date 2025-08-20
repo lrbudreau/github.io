@@ -48,6 +48,25 @@
         max-width: 24px !important;
         max-height: 24px !important;
       }
+
+        #legend {
+          position: absolute;
+          bottom: 15px;
+          right: 15px;
+          background: white;
+          padding: 10px;
+          border-radius: 6px;
+          font-size: 14px;
+          box-shadow: 0 0 5px rgba(0,0,0,0.3);
+          z-index: 1000;
+        }
+        .legend-item {
+          display: inline-block;
+          width: 12px;
+          height: 12px;
+          margin-right: 6px;
+          vertical-align: middle;
+        }
     </style>
 </head>
 <body>
@@ -82,7 +101,9 @@
 
     <button onclick="filterParking()">Find Parking</button>
 </div>
-
+<div id="noLotsMessage" style="display: none; text-align: center; padding: 10px; color: red; font-weight: bold;">
+  No matching parking lots found.
+</div>
 <div id="map"></div>
 
 <script>
@@ -149,57 +170,66 @@
     passTypeSelect.appendChild(allOption);
     
     // Load ArcGIS Feature Layer
-    parkingLayer = L.esri.featureLayer({
-        url: 'https://services1.arcgis.com/mLNdQKiKsj5Z5YMN/arcgis/rest/services/Parking2020/FeatureServer/0',
-        style: function (feature) {
-            return getLotStyle(feature.properties.LOT_PERM);
-        },
-        onEachFeature: function (feature, layer) {
-          const props = feature.properties;
-        
-          // Split LOT_PERM into array and clean entries
-          if (props.LOT_PERM) {
-            const types = props.LOT_PERM
-              .split(/[,\s]+/)
-              .map(t => t.trim())
-              .filter(Boolean);
-        
-            // Add each unique type to the Set
-            types.forEach(t => typeSet.add(t));
-          }
-        
-          const center = layer.getBounds().getCenter();
-          const googleMapsURL = `https://www.google.com/maps/dir/?api=1&destination=${center.lat},${center.lng}`;
-        
-          layer.bindPopup(`
-            <b>${props.LOT_NAME || 'Parking Lot'}</b><br>
-            Type: ${(props.LOT_PERM || 'Unknown').split(/[,\s]+/).join(', ')}<br>
-            Description: ${props.LotDesc || 'Not Available'}<br>
-            <a href="${googleMapsURL}" target="_blank" rel="noopener">Get Directions</a>
-          `);
-        
-          allParkingLayers.push(layer);
+    L.esri
+      .featureLayer({
+        url: 'https://services1.arcgis.com/mLNdQKiKsj5Z5YMN/arcgis/rest/services/Parking2020/FeatureServer/0'
+      })
+      .query()
+      .where('1=1')
+      .run((error, featureCollection) => {
+        if (error) {
+          console.error('Error loading parking data:', error);
+          return;
         }
-    }).addTo(map);
     
-    // After all features are loaded, populate the dropdown
-    parkingLayer.once('load', function () {
-      const sortedTypes = Array.from(typeSet).sort();
+        // Clear any existing layers
+        allParkingLayers = [];
     
-      // Add "-- All --" option first
-      const allOption = document.createElement('option');
-      allOption.value = '';
-      allOption.textContent = '-- All --';
-      passTypeSelect.appendChild(allOption);
+        const geojsonLayer = L.geoJSON(featureCollection, {
+          style: feature => {
+            return getLotStyle(feature.properties.LOT_PERM);
+          },
+          onEachFeature: function (feature, layer) {
+            const props = feature.properties;
     
-      // Add dynamic options
-      sortedTypes.forEach(type => {
-        const option = document.createElement('option');
-        option.value = type;
-        option.textContent = type;
-        passTypeSelect.appendChild(option);
+            const types = props.LOT_PERM
+              ? props.LOT_PERM.split(/[,\s]+/).map(t => t.trim()).filter(Boolean)
+              : [];
+    
+            types.forEach(t => typeSet.add(t));
+    
+            const center = layer.getBounds().getCenter();
+            const googleMapsURL = `https://www.google.com/maps/dir/?api=1&destination=${center.lat},${center.lng}`;
+    
+            layer.bindPopup(`
+              <b>${props.LOT_NAME || 'Parking Lot'}</b><br>
+              Type: ${types.join(', ')}<br>
+              Description: ${props.LotDesc || 'Not Available'}<br>
+              <a href="${googleMapsURL}" target="_blank" rel="noopener">Get Directions</a>
+            `);
+    
+            allParkingLayers.push(layer);
+          }
+        }).addTo(map);
+    
+        // Populate dropdown after data is loaded
+        const sortedTypes = Array.from(typeSet).sort();
+    
+        const passTypeSelect = document.getElementById('passType');
+        passTypeSelect.innerHTML = '';
+    
+        const allOption = document.createElement('option');
+        allOption.value = '';
+        allOption.textContent = '-- All --';
+        passTypeSelect.appendChild(allOption);
+    
+        sortedTypes.forEach(type => {
+          const option = document.createElement('option');
+          option.value = type;
+          option.textContent = type;
+          passTypeSelect.appendChild(option);
+        });
       });
-    });
 
 
     // Load dummy construction zones
@@ -299,34 +329,72 @@
       });
     });
 
-
+    function getDistance(latlng1, latlng2) {
+      return map.distance(latlng1, latlng2); // returns meters
+    }
+    
     // Filtering function
     function filterParking() {
-        const selectedType = document.getElementById('passType').value;
-        const freeOnly = document.getElementById('freeOnly')?.checked;
+      const selectedType = document.getElementById('passType').value;
+      const freeOnly = document.getElementById('freeOnly')?.checked;
+      const selectedAbbr = document.getElementById('building').value;
     
-        allParkingLayers.forEach(layer => {
-            const props = layer.feature?.properties;
-            const types = props?.LOT_PERM
-              ? props.LOT_PERM.split(/[,\s]+/).map(s => s.trim()).filter(Boolean)
-              : [];
-            let visible = true;
+      let visibleCount = 0;
+      let buildingCenter = null;
     
-            if (freeOnly && !props?.FREE) {
-                visible = false;
-            }
-    
-            if (selectedType && !types.includes(selectedType)) {
-                visible = false;
-            }
-    
-            if (visible) {
-                map.addLayer(layer);
-            } else {
-                map.removeLayer(layer);
-            }
+      if (selectedAbbr && buildingLayer) {
+        buildingLayer.eachFeature(layer => {
+          const props = layer.feature?.properties;
+          if (props?.BLDG_ABBR === selectedAbbr) {
+            buildingCenter = layer.getBounds().getCenter();
+          }
         });
+      }
+    
+      const visibleLayers = [];
+    
+      allParkingLayers.forEach(layer => {
+        const props = layer.feature?.properties;
+        const types = props?.LOT_PERM
+          ? props.LOT_PERM.split(/[,\s]+/).map(s => s.trim()).filter(Boolean)
+          : [];
+    
+        let visible = true;
+    
+        if (freeOnly && !props?.FREE) {
+          visible = false;
+        }
+    
+        if (selectedType && !types.some(t => t.startsWith(selectedType))) {
+          visible = false;
+        }
+    
+        if (visible) {
+          visibleLayers.push(layer);
+        } else {
+          map.removeLayer(layer);
+        }
+      });
+    
+      // Sort by distance if building selected
+      if (buildingCenter) {
+        visibleLayers.sort((a, b) => {
+          const aCenter = a.getBounds().getCenter();
+          const bCenter = b.getBounds().getCenter();
+          return getDistance(buildingCenter, aCenter) - getDistance(buildingCenter, bCenter);
+        });
+      }
+    
+      // Re-add sorted layers
+      visibleLayers.forEach(layer => {
+        map.addLayer(layer);
+        visibleCount++;
+      });
+    
+      document.getElementById('noLotsMessage').style.display = visibleCount === 0 ? 'block' : 'none';
     }
+
+
 
     
     function buildingChanged() {
@@ -372,6 +440,14 @@
     }
 
 </script>
-
+<div id="legend">
+  <strong>Legend:</strong><br>
+  <span class="legend-item" style="background-color:#1f77b4"></span> A<br>
+  <span class="legend-item" style="background-color:#2ca02c"></span> B<br>
+  <span class="legend-item" style="background-color:#ff7f0e"></span> C<br>
+  <span class="legend-item" style="background-color:#d62728"></span> Paid<br>
+  <span class="legend-item" style="background-color:#9467bd"></span> Visitor<br>
+  <span class="legend-item" style="background-color:#888888"></span> Other
+</div>
 </body>
 </html>

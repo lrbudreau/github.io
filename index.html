@@ -228,9 +228,8 @@
       onEachFeature: function (feature, layer) {
         const props = feature.properties;
         
-        // Adjust these property names based on actual ArcGIS field names
-        const name = props.NAME || props.name;
-        const abbr = props.ABBR || props.abbr || name;
+        const name = props.BUILDING_N || "Unknown";
+        const abbr = props.BLDG_ABBR || name;
     
         // Populate dropdown
         const option = document.createElement('option');
@@ -293,7 +292,7 @@
       buildingLayer.eachLayer(layer => {
         const props = layer.feature.properties;
     
-        if (props.abbr === selectedAbbr) {
+        if (props.BLDG_ABBR === selectedAbbr) {
           const bounds = layer.getBounds();
           const padding = window.innerWidth > 768 ? [200, 200] : [100, 100];
           map.fitBounds(bounds, { padding });

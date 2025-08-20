@@ -220,6 +220,8 @@
     // Load ArcGIS Feature Layer
     let selectedBuildingAbbr = null; // Track selected building globally
     
+    let buildingFeatures = []; // ← Declare this outside so it's accessible
+    
     buildingLayer = L.esri.featureLayer({
       url: 'https://services1.arcgis.com/mLNdQKiKsj5Z5YMN/arcgis/rest/services/Export_Output106/FeatureServer/0',
       style: function(feature) {
@@ -233,16 +235,29 @@
         };
       },
       onEachFeature: function (feature, layer) {
-        const props = feature.properties;
-        const name = props.BUILDING_N || "Unknown";
-        const abbr = props.BLDG_ABBR || name;
-    
-        const option = document.createElement('option');
-        option.value = abbr;
-        option.textContent = name;
-        buildingSelect.appendChild(option);
+        buildingFeatures.push(feature); // collect for dropdown
       }
     }).addTo(map);
+    
+    // Wait until all features are loaded before populating the select
+    buildingLayer.on('load', function() {
+      const sorted = buildingFeatures
+        .filter(f => f.properties.BLDG_ABBR && f.properties.BUILDING_N)
+        .sort((a, b) => {
+          const abbrA = a.properties.BLDG_ABBR.toUpperCase();
+          const abbrB = b.properties.BLDG_ABBR.toUpperCase();
+          return abbrA.localeCompare(abbrB);
+        });
+    
+      sorted.forEach(feature => {
+        const abbr = feature.properties.BLDG_ABBR;
+        const name = feature.properties.BUILDING_N;
+        const option = document.createElement('option');
+        option.value = abbr;
+        option.textContent = `(${abbr}) ${name}`;
+        buildingSelect.appendChild(option);
+      });
+    });
 
 
     // Filtering function

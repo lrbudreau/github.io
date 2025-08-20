@@ -8,6 +8,8 @@
     <!-- Leaflet CSS & JS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/esri-leaflet/dist/esri-leaflet.js"></script>
+
 
     <style>
         body {
@@ -213,30 +215,30 @@
     let buildingLayer = null;
     let selectedBuildingLayer = null;
     
-    // Fetch and add buildings to the map
-    fetch('data/buildings.geojson')
-      .then(res => res.json())
-      .then(data => {
-        // Populate dropdown
-        const buildingSelect = document.getElementById('building');
-        data.features.forEach(feature => {
-          const name = feature.properties.name;
-          const abbr = feature.properties.abbr;
-          const option = document.createElement('option');
-          option.value = abbr;
-          option.textContent = name;
-          buildingSelect.appendChild(option);
-        });
+    const buildingSelect = document.getElementById('building');
     
-        // Create Leaflet GeoJSON layer
-        buildingLayer = L.geoJSON(data, {
-          style: {
-            color: '#666',
-            weight: 0.5,
-            opacity: 0.6
-          }
-        }).addTo(map);
-      });
+    // Load ArcGIS Feature Layer
+    buildingLayer = L.esri.featureLayer({
+      url: 'https://services1.arcgis.com/mLNdQKiKsj5Z5YMN/arcgis/rest/services/Export_Output106/FeatureServer/0',
+      style: {
+        color: '#666',
+        weight: 0.5,
+        opacity: 0.6
+      },
+      onEachFeature: function (feature, layer) {
+        const props = feature.properties;
+        
+        // Adjust these property names based on actual ArcGIS field names
+        const name = props.NAME || props.name;
+        const abbr = props.ABBR || props.abbr || name;
+    
+        // Populate dropdown
+        const option = document.createElement('option');
+        option.value = abbr;
+        option.textContent = name;
+        buildingSelect.appendChild(option);
+      }
+    }).addTo(map);
 
 
     // Filtering function

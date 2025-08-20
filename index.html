@@ -122,19 +122,19 @@
   }).addTo(map);
 
 
-// Create a Leaflet control for the legend (bottom left)
+// Add legend control to the map
 const legendControl = L.control({ position: 'bottomleft' });
 
 legendControl.onAdd = function(map) {
   const div = L.DomUtil.create('div', 'info legend');
   div.id = 'legend';
-  div.innerHTML = '<strong>Legend:</strong><br>';
   return div;
 };
 
 legendControl.addTo(map);
 
-const legendDiv = document.getElementById('legend'); // Now safe to use in updateLegend()
+// Only ONE reference to the legend DOM element — after it's added to the map
+const legendDiv = document.getElementById('legend');
 
     
   // Add simple traffic layer (demo)
@@ -144,7 +144,6 @@ const legendDiv = document.getElementById('legend'); // Now safe to use in updat
   }).addTo(map);
 
   const passTypeSelect = document.getElementById('passType');
-  const legendDiv = document.getElementById('legend');
   const noLotsMessage = document.getElementById('noLotsMessage');
 
   // Set to collect unique pass types (LOT_PERM)

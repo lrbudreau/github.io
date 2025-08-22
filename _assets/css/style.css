@@ -52,20 +52,23 @@ header h1 {
 nav.top-nav {
   background-color: #222;
   width: 100%;
-  max-width: 2000px;
-  margin-top: 10px;
-  box-sizing: border-box;
 }
 
-/* Nav links inside nav */
-.nav-links {
+/* Nav inner container to center links */
+.nav-container {
   max-width: 2000px;
   margin: 0 auto;
   padding: 10px 20px;
+  box-sizing: border-box;
+}
+
+/* Navigation links list */
+.nav-links {
+  list-style: none;
   display: flex;
   gap: 20px;
-  list-style: none;
-  justify-content: flex-start;
+  margin: 0;
+  padding: 0;
 }
 
 .nav-links li a {
@@ -77,6 +80,7 @@ nav.top-nav {
 .nav-links li a:hover {
   text-decoration: underline;
 }
+
 
 /* Main content */
 main {

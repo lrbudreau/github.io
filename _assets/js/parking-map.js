@@ -208,6 +208,7 @@ $(document).ready(function () {
   buildingLayer.on('load', () => {
     buildingSelect.innerHTML = '';
     const sorted = buildingFeatures
+      .map(b => b.feature)
       .filter(f => f.properties.BLDG_ABBR && f.properties.BUILDING_N)
       .sort((a, b) => a.properties.BLDG_ABBR.localeCompare(b.properties.BLDG_ABBR));
 
@@ -317,18 +318,17 @@ function buildingChanged() {
     map.setView([40.4237, -86.9212], 15);
   } else {
     const item = buildingFeatures.find(b => b.feature.properties.BLDG_ABBR === selectedAbbr);
-    if (item) {
+    if (item && item.layer) {
       const bounds = item.layer.getBounds();
       const padding = window.innerWidth > 768 ? [200, 200] : [100, 100];
       map.fitBounds(bounds, { padding });
     }
   }
 
-  // This will force the layer style to re-evaluate for all buildings
+  // Force style update to highlight selected
   buildingLayer.setStyle(buildingLayer.options.style);
   filterParking();
 }
-
 
   function toggleHandicapParking() {
     const show = document.getElementById('handicapToggle').checked;

@@ -323,6 +323,7 @@ function buildingChanged() {
       const padding = window.innerWidth > 768 ? [200, 200] : [100, 100];
       map.fitBounds(bounds, { padding });
     }
+    console.log('clicked');
   }
 
   // Force style update to highlight selected
@@ -343,8 +344,7 @@ function buildingChanged() {
   
   // Bind event listeners after defining functions
   passTypeSelect.addEventListener('change', filterParking);
-  buildingSelect.addEventListener('change', buildingChanged);
+  document.getElementById('building')?.addEventListener('change', buildingChanged);
   document.getElementById('handicapToggle')?.addEventListener('change', toggleHandicapParking);
-  
 });
 

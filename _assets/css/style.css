@@ -1,11 +1,3 @@
-html, body {
-      margin: 0;
-      padding: 0;
-      height: 100%;
-      font-family: 'Champion HTF', sans-serif;
-      background-color: #f9f9f9;
-    }
-
     .page-wrapper {
       display: flex;
       flex-direction: column;
@@ -13,16 +5,29 @@ html, body {
     }
 
     header {
-      background-color: #eee;
-      padding: 15px 20px;
+      width: 100%;
       border-bottom: 1px solid #ccc;
-    }
+    }    
 
-    .header-content {
+.header-content {
       display: flex;
       align-items: center;
       justify-content: space-between;
+      justify-content: flex-start;
       flex-wrap: wrap;
+    }
+    
+    .branding {
+      display: flex;
+      align-items: center;
+      gap: 10px; 
+    }
+    
+    .department-title {
+      font-size: 24px;
+      font-weight: bold;
+      color: #000;
+      text-decoration: none;
     }
 
     #purdue-logo img {

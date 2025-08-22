@@ -11,54 +11,61 @@
 .container {
   max-width: 2000px; /* Or your preferred max width */
   width: 100%;
+  margin: 0 auto;
+  padding: 0 10px;
+  box-sizing: border-box;
 }
 
 /* Header */
 header {
-  max-width: 2000px;
   width: 100%;
   border-bottom: 1px solid #ccc;
+  background: #fff;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* center children horizontally */
+  padding: 10px 0;
 }
 
-.header-content {
-  max-width: 2000px; /* increase from 85% or smaller value */
+/* Container inside header to control max width and layout */
+header > .header-content {
+  max-width: 2000px;
   width: 100%;
+  padding: 0 10px;
+  box-sizing: border-box;
   display: flex;
-  align-items: center;
-  gap: 10px;
   flex-wrap: wrap;
-}
-
-.branding {
-  display: flex;
   align-items: center;
-  gap: 10px;
+  justify-content: space-between;
 }
 
-.department-title,
-#entity-title a {
-  font-size: 24px;
+/* Header title */
+header h1 {
+  margin: 0;
+  font-size: 28px;
   font-weight: bold;
   color: #000;
-  text-decoration: none;
-}
-
-#purdue-logo img {
-  width: 180px;
-  height: auto;
 }
 
 /* Navigation */
 nav.top-nav {
   background-color: #222;
+  width: 100%;
+  max-width: 2000px;
+  margin-top: 10px;
+  box-sizing: border-box;
 }
 
+/* Nav links inside nav */
 .nav-links {
-  list-style: none;
-  margin: 0;
+  max-width: 2000px;
+  margin: 0 auto;
   padding: 10px 20px;
   display: flex;
   gap: 20px;
+  list-style: none;
+  justify-content: flex-start;
 }
 
 .nav-links li a {
@@ -76,8 +83,9 @@ main {
   flex: 1;
   padding: 40px 20px;
   width: 100%;
-  max-width: 1500px;
+  max-width: 2000px; /* match page max width */
   margin: 0 auto;
+  box-sizing: border-box;
 }
 
 /* Card grid */
@@ -121,6 +129,9 @@ footer {
   text-align: center;
   padding: 15px 10px;
   width: 100%;
+  max-width: 2000px;
+  margin: 0 auto;
+  box-sizing: border-box;
 }
 
 /* Controls bar */
@@ -132,6 +143,9 @@ footer {
   flex-wrap: wrap;
   justify-content: center;
   border-bottom: 1px solid #ccc;
+  max-width: 2000px;
+  margin: 0 auto;
+  box-sizing: border-box;
 }
 
 #controls label {

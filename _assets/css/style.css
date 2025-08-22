@@ -1,6 +1,6 @@
 /* Page wrapper and layout */
 .page-wrapper {
-  max-width: 1500px; /* increase from 85% or smaller value */
+  max-width: 2000px;
   width: 100%;
   margin: 0 auto;  /* center horizontally */
   padding: 0 10px;
@@ -9,7 +9,7 @@
 
 /* Container to constrain width for nav, map, etc */
 .container {
-  max-width: 1500px; /* Or your preferred max width */
+  max-width: 2000px; /* Or your preferred max width */
   width: 100%;
 }
 
@@ -20,6 +20,8 @@ header {
 }
 
 .header-content {
+  max-width: 2000px; /* increase from 85% or smaller value */
+  width: 100%;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -145,7 +147,7 @@ footer {
 /* Map */
 #map {
   width: 100%;         /* full width inside container */
-  max-width: 1500px;   /* match .page-wrapper max-width */
+  max-width: 2000px;   /* match .page-wrapper max-width */
   height: 600px;
   margin: 20px auto;
   box-sizing: border-box;

@@ -308,6 +308,12 @@ $(document).ready(function () {
     })
     .addTo(map);
 
+  // Bind event listeners after defining functions
+  passTypeSelect.addEventListener('change', filterParking);
+  buildingSelect.addEventListener('change', buildingChanged);
+  document.getElementById('handicapToggle')?.addEventListener('change', toggleHandicapParking);
+});
+
   function buildingChanged() {
     const selectedAbbr = buildingSelect.value;
     if (!buildingLayer) return;
@@ -341,11 +347,3 @@ $(document).ready(function () {
       }
     }
   }
-
-  // Bind event listeners after defining functions
-  passTypeSelect.addEventListener('change', filterParking);
-  document.getElementById('freeOnly')?.addEventListener('change', filterParking);
-  buildingSelect.addEventListener('change', buildingChanged);
-  document.getElementById('handicapToggle')?.addEventListener('change', toggleHandicapParking);
-});
-});

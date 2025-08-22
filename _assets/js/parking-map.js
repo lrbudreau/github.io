@@ -201,7 +201,7 @@ $(document).ready(function () {
       };
     },
     onEachFeature: (feature, layer) => {
-      buildingFeatures.push(feature);
+      buildingFeatures.push({ feature, layer });
     }
   }).addTo(map);
 
@@ -309,39 +309,26 @@ $(document).ready(function () {
     .addTo(map);
 
 
-  function buildingChanged() {
-    const selectedAbbr = buildingSelect.value;
-    selectedBuildingAbbr = selectedAbbr || null;
-  
-    if (!selectedAbbr) {
-      map.setView([40.4237, -86.9212], 15);
-    } else {
-      // Find the selected feature from stored features
-      const feature = buildingFeatures.find(f => f.properties.BLDG_ABBR === selectedAbbr);
-      if (feature) {
-        const layer = L.geoJSON(feature, {
-          style: {
-            color: '#0000ff',
-            weight: 2,
-            opacity: 1
-          }
-        }).addTo(map);
-  
-        const bounds = layer.getBounds();
-        const padding = window.innerWidth > 768 ? [200, 200] : [100, 100];
-        map.fitBounds(bounds, { padding });
-  
-        // Optional: remove previous selection layer before adding new
-        if (map._buildingHighlightLayer) {
-          map.removeLayer(map._buildingHighlightLayer);
-          map._buildingHighlightLayer = null;
-        }
-        map._buildingHighlightLayer = layer;
-      }
+function buildingChanged() {
+  const selectedAbbr = buildingSelect.value;
+  selectedBuildingAbbr = selectedAbbr || null;
+
+  if (!selectedAbbr) {
+    map.setView([40.4237, -86.9212], 15);
+  } else {
+    const item = buildingFeatures.find(b => b.feature.properties.BLDG_ABBR === selectedAbbr);
+    if (item) {
+      const bounds = item.layer.getBounds();
+      const padding = window.innerWidth > 768 ? [200, 200] : [100, 100];
+      map.fitBounds(bounds, { padding });
     }
-  
-    filterParking();
   }
+
+  // This will force the layer style to re-evaluate for all buildings
+  buildingLayer.setStyle(buildingLayer.options.style);
+  filterParking();
+}
+
 
   function toggleHandicapParking() {
     const show = document.getElementById('handicapToggle').checked;

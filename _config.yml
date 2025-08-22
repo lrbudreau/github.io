@@ -1,2 +1,4 @@
 title: Purdue Parking Map
 baseurl: "/github.io"
+include:
+  - "_assets"

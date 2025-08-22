@@ -1,14 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <link href="https://www.purdue.edu/purdue/images/favicon.ico" rel="shortcut icon"> <!-- page title icon -->
-  <title>Template</title>
-  <link rel="stylesheet" type="text/css" href="https://www.purdue.edu/purdue/fonts/champion-all.css" />
-  <link rel="stylesheet" href="{{ '/_assets/css/style.css' | relative_url }}"> <!-- your CSS -->
-</head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Purdue Parking Map</title>
+    <link rel="stylesheet" type="text/css" href="https://www.purdue.edu/purdue/fonts/champion-all.css" />
+    <link rel="stylesheet" href="{{ '/_assets/css/style.css' | relative_url }}"> 
+
+    <!-- Leaflet CSS & JS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/esri-leaflet/dist/esri-leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-omnivore@0.3.4/leaflet-omnivore.min.js"></script>
+    <!-- Select2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <!-- jQuery (required for Select2) -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Select2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <body>
       {% include header.html %}
     <div class="page-wrapper">

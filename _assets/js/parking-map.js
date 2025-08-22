@@ -308,7 +308,7 @@ $(document).ready(function () {
     })
     .addTo(map);
 
-  function buildingChanged() {
+  window.buildingChanged = function() {
     const selectedAbbr = buildingSelect.value;
     if (!buildingLayer) return;
 
@@ -331,7 +331,7 @@ $(document).ready(function () {
     filterParking();
   }
 
-  function toggleHandicapParking() {
+  window.toggleHandicapParking = function() {
     const show = document.getElementById('handicapToggle').checked;
     if (handicapLayer) {
       if (show) {

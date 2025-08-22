@@ -331,7 +331,33 @@ const legendDiv = document.getElementById('legend');
     noLotsMessage.style.display = visibleCount === 0 ? 'block' : 'none';
   }
 
-  function buildingChanged() {
+  // Handicap parking icon & layer (unchanged)
+  const handicapIcon = L.icon({
+    iconUrl: 'https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/svgs/solid/wheelchair.svg',
+    iconSize: [20, 20],
+    iconAnchor: [10, 20],
+    popupAnchor: [0, -20]
+  });
+
+  let handicapLayer = null;
+  handicapLayer = omnivore.kml('https://purdueuniversity.maps.arcgis.com/sharing/rest/content/items/13158cca51cf4190aaa002bde42f816d/data')
+    .on('ready', function() {
+      this.eachLayer(function(layer) {
+        if (layer instanceof L.Marker) {
+          layer.setIcon(handicapIcon);
+          layer.bindPopup('Handicap Accessible Parking');
+        }
+      });
+    })
+    .addTo(map);
+
+  // Event listeners to trigger filtering
+  passTypeSelect.addEventListener('change', filterParking);
+  document.getElementById('freeOnly')?.addEventListener('change', filterParking);
+  buildingSelect.addEventListener('change', buildingChanged);
+});
+
+ function buildingChanged() {
     const selectedAbbr = buildingSelect.value;
     if (!buildingLayer) return;
 
@@ -354,26 +380,6 @@ const legendDiv = document.getElementById('legend');
     filterParking();
   }
 
-  // Handicap parking icon & layer (unchanged)
-  const handicapIcon = L.icon({
-    iconUrl: 'https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/svgs/solid/wheelchair.svg',
-    iconSize: [20, 20],
-    iconAnchor: [10, 20],
-    popupAnchor: [0, -20]
-  });
-
-  let handicapLayer = null;
-  handicapLayer = omnivore.kml('https://purdueuniversity.maps.arcgis.com/sharing/rest/content/items/13158cca51cf4190aaa002bde42f816d/data')
-    .on('ready', function() {
-      this.eachLayer(function(layer) {
-        if (layer instanceof L.Marker) {
-          layer.setIcon(handicapIcon);
-          layer.bindPopup('Handicap Accessible Parking');
-        }
-      });
-    })
-    .addTo(map);
-
   function toggleHandicapParking() {
     const show = document.getElementById('handicapToggle').checked;
     if (handicapLayer) {
@@ -384,9 +390,3 @@ const legendDiv = document.getElementById('legend');
       }
     }
   }
-
-  // Event listeners to trigger filtering
-  passTypeSelect.addEventListener('change', filterParking);
-  document.getElementById('freeOnly')?.addEventListener('change', filterParking);
-  buildingSelect.addEventListener('change', buildingChanged);
-});

@@ -1,52 +1,43 @@
-$(document).ready(function() {
-    $('#building').select2({
-      placeholder: "-- Select Building --",
-      allowClear: true,
-    });
+$(document).ready(function () {
+  $('#building').select2({
+    placeholder: "-- Select Building --",
+    allowClear: true,
+  });
+
   // Initialize the map at Purdue coordinates
-  var map = L.map('map').setView([40.4237, -86.9212], 15);
+  const map = L.map('map').setView([40.4237, -86.9212], 15);
 
   // Add OpenStreetMap tiles
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 19,
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    maxZoom: 19,
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
   }).addTo(map);
 
+  // Add legend control
+  const legendControl = L.control({ position: 'bottomleft' });
+  legendControl.onAdd = function () {
+    const div = L.DomUtil.create('div', 'info legend');
+    div.id = 'legend';
+    return div;
+  };
+  legendControl.addTo(map);
+  const legendDiv = document.getElementById('legend');
 
-// Add legend control to the map
-const legendControl = L.control({ position: 'bottomleft' });
-
-legendControl.onAdd = function(map) {
-  const div = L.DomUtil.create('div', 'info legend');
-  div.id = 'legend';
-  return div;
-};
-
-legendControl.addTo(map);
-
-// Only ONE reference to the legend DOM element — after it's added to the map
-const legendDiv = document.getElementById('legend');
-
-    
-  // Add simple traffic layer (demo)
-  var trafficLayer = L.tileLayer('https://tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
-      attribution: 'Traffic demo tiles',
-      opacity: 0.3
+  // Add demo traffic layer
+  L.tileLayer('https://tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
+    attribution: 'Traffic demo tiles',
+    opacity: 0.3
   }).addTo(map);
 
   const passTypeSelect = document.getElementById('passType');
   const noLotsMessage = document.getElementById('noLotsMessage');
+  const buildingSelect = document.getElementById('building');
 
-  // Set to collect unique pass types (LOT_PERM)
   const typeSet = new Set();
-
-  // Temporary storage for all parking layers for filtering
   let allParkingLayers = [];
-
-  // Dynamic color palette generator for unique LOT_PERM values
-  // Returns consistent colors for each type
   const colorPalette = {};
-  const generateColor = (function() {
+
+  const generateColor = (function () {
     const colors = [
       "#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd",
       "#8c564b", "#e377c2", "#7f7f7f", "#bcbd22", "#17becf",
@@ -54,17 +45,16 @@ const legendDiv = document.getElementById('legend');
       "#c49c94", "#f7b6d2", "#c7c7c7", "#dbdb8d", "#9edae5"
     ];
     let index = 0;
-    return function(type) {
+    return function (type) {
       if (!colorPalette[type]) {
         colorPalette[type] = colors[index % colors.length];
         index++;
       }
       return colorPalette[type];
-    }
+    };
   })();
 
   function getLotStyle(lotPerm) {
-    // Support multiple types separated by comma or space, pick first for color
     const types = lotPerm ? lotPerm.split(/[,\s]+/).map(t => t.trim()).filter(Boolean) : [];
     const mainType = types.length > 0 ? types[0] : 'Other';
     const color = generateColor(mainType) || '#888888';
@@ -76,40 +66,34 @@ const legendDiv = document.getElementById('legend');
     };
   }
 
-  // Populate legend dynamically
-    function updateLegend() {
-      legendDiv.innerHTML = '<strong>Legend:</strong><br>';
-    
-      const sortedTypes = Array.from(typeSet).sort((a,b) => {
-        if (a === 'Other') return 1;
-        if (b === 'Other') return -1;
-        return a.localeCompare(b);
-      });
-    
-      sortedTypes.forEach(type => {
-        const color = generateColor(type);
-        
-        const item = document.createElement('div');
-        item.className = 'legend-entry';
-    
-        const span = document.createElement('span');
-        span.className = 'legend-item';
-        span.style.backgroundColor = color;
-    
-        const label = document.createElement('span');
-        label.textContent = ` ${type}`;
-    
-        item.appendChild(span);
-        item.appendChild(label);
-        legendDiv.appendChild(item);
-      });
-    }
+  function updateLegend() {
+    legendDiv.innerHTML = '<strong>Legend:</strong><br>';
+    const sortedTypes = Array.from(typeSet).sort((a, b) => {
+      if (a === 'Other') return 1;
+      if (b === 'Other') return -1;
+      return a.localeCompare(b);
+    });
 
+    sortedTypes.forEach(type => {
+      const color = generateColor(type);
+      const item = document.createElement('div');
+      item.className = 'legend-entry';
 
-  // Initialize "No matching lots" message style
+      const span = document.createElement('span');
+      span.className = 'legend-item';
+      span.style.backgroundColor = color;
+
+      const label = document.createElement('span');
+      label.textContent = ` ${type}`;
+
+      item.appendChild(span);
+      item.appendChild(label);
+      legendDiv.appendChild(item);
+    });
+  }
+
   noLotsMessage.style.display = 'none';
 
-  // Load parking lot data from ArcGIS FeatureServer
   L.esri
     .featureLayer({
       url: 'https://services1.arcgis.com/mLNdQKiKsj5Z5YMN/arcgis/rest/services/Parking2020/FeatureServer/0'
@@ -125,42 +109,36 @@ const legendDiv = document.getElementById('legend');
       allParkingLayers = [];
       typeSet.clear();
 
-    if (featureCollection.features.length > 0) {
-      const geojsonLayer = L.geoJSON(featureCollection.features, {
-        style: feature => getLotStyle(feature.properties.LOT_PERM),
-        onEachFeature: (feature, layer) => {
-          const props = feature.properties;
-    
-          const types = props.LOT_PERM
-            ? props.LOT_PERM.split(/[,\s]+/).map(t => t.trim()).filter(Boolean)
-            : ['Other'];
-    
-          types.forEach(t => typeSet.add(t));
-    
-          const center = layer.getBounds().getCenter();
-          const googleMapsURL = `https://www.google.com/maps/dir/?api=1&destination=${center.lat},${center.lng}`;
-    
-          layer.bindPopup(`
-            <b>${props.LOT_NAME || 'Parking Lot'}</b><br>
-            Type: ${types.join(', ')}<br>
-            Description: ${props.LotDesc || 'Not Available'}<br>
-            <a href="${googleMapsURL}" target="_blank" rel="noopener">Get Directions</a>
-          `);
-    
-          // Optional: better user interaction
-          layer.on('click', () => layer.openPopup());
-          layer.on('mouseover', () => layer.bringToFront());
-    
-          allParkingLayers.push(layer);
-        }
-      }).addTo(map);
-    }
+      if (featureCollection.features.length > 0) {
+        const geojsonLayer = L.geoJSON(featureCollection.features, {
+          style: feature => getLotStyle(feature.properties.LOT_PERM),
+          onEachFeature: (feature, layer) => {
+            const props = feature.properties;
+            const types = props.LOT_PERM
+              ? props.LOT_PERM.split(/[,\s]+/).map(t => t.trim()).filter(Boolean)
+              : ['Other'];
 
+            types.forEach(t => typeSet.add(t));
 
+            const center = layer.getBounds().getCenter();
+            const googleMapsURL = `https://www.google.com/maps/dir/?api=1&destination=${center.lat},${center.lng}`;
 
-      // Populate dropdown after data is loaded
+            layer.bindPopup(`
+              <b>${props.LOT_NAME || 'Parking Lot'}</b><br>
+              Type: ${types.join(', ')}<br>
+              Description: ${props.LotDesc || 'Not Available'}<br>
+              <a href="${googleMapsURL}" target="_blank" rel="noopener">Get Directions</a>
+            `);
+
+            layer.on('click', () => layer.openPopup());
+            layer.on('mouseover', () => layer.bringToFront());
+
+            allParkingLayers.push(layer);
+          }
+        }).addTo(map);
+      }
+
       const sortedTypes = Array.from(typeSet).sort();
-
       passTypeSelect.innerHTML = '';
       const allOption = document.createElement('option');
       allOption.value = '';
@@ -178,13 +156,11 @@ const legendDiv = document.getElementById('legend');
       filterParking();
     });
 
-  // Construction zones loading (unchanged)
   fetch('data/construction.geojson')
     .then(res => res.json())
     .then(data => {
       const today = new Date();
       today.setHours(0, 0, 0, 0);
-
       const filteredFeatures = data.features.filter(feature => {
         const endDateStr = feature.properties.endDate;
         if (!endDateStr) return true;
@@ -192,12 +168,10 @@ const legendDiv = document.getElementById('legend');
         return endDate >= today;
       });
 
-      const filteredData = {
+      L.geoJSON({
         type: "FeatureCollection",
         features: filteredFeatures
-      };
-
-      L.geoJSON(filteredData, {
+      }, {
         style: {
           color: 'red',
           weight: 3,
@@ -211,12 +185,9 @@ const legendDiv = document.getElementById('legend');
       }).addTo(map);
     });
 
-  // Buildings layer and controls (unchanged except sorting moved here)
   let buildingLayer = null;
   let selectedBuildingAbbr = null;
   let buildingFeatures = [];
-
-  const buildingSelect = document.getElementById('building');
 
   buildingLayer = L.esri.featureLayer({
     url: 'https://services1.arcgis.com/mLNdQKiKsj5Z5YMN/arcgis/rest/services/Export_Output106/FeatureServer/0',
@@ -235,38 +206,28 @@ const legendDiv = document.getElementById('legend');
   }).addTo(map);
 
   buildingLayer.on('load', () => {
-    // Clear previous options
     buildingSelect.innerHTML = '';
-
     const sorted = buildingFeatures
       .filter(f => f.properties.BLDG_ABBR && f.properties.BUILDING_N)
-      .sort((a, b) => {
-        const abbrA = a.properties.BLDG_ABBR.toUpperCase();
-        const abbrB = b.properties.BLDG_ABBR.toUpperCase();
-        return abbrA.localeCompare(abbrB);
-      });
+      .sort((a, b) => a.properties.BLDG_ABBR.localeCompare(b.properties.BLDG_ABBR));
 
-    // Add default option
     const defaultOpt = document.createElement('option');
     defaultOpt.value = '';
     defaultOpt.textContent = '-- Select Building --';
     buildingSelect.appendChild(defaultOpt);
 
     const maxLength = 35;
-    
+
     sorted.forEach(feature => {
       const abbr = feature.properties.BLDG_ABBR;
       const name = feature.properties.BUILDING_N;
       const option = document.createElement('option');
       option.value = abbr;
-    
       const displayName = `(${abbr}) ${name}`;
       option.title = displayName;
-    
       option.textContent = displayName.length > maxLength
         ? displayName.slice(0, maxLength) + '…'
         : displayName;
-    
       buildingSelect.appendChild(option);
     });
   });
@@ -275,7 +236,6 @@ const legendDiv = document.getElementById('legend');
     return map.distance(latlng1, latlng2);
   }
 
-  // Filtering function
   function filterParking() {
     const selectedType = passTypeSelect.value;
     const selectedAbbr = buildingSelect.value;
@@ -313,7 +273,6 @@ const legendDiv = document.getElementById('legend');
       }
     });
 
-    // Sort visible layers by distance if building selected
     if (buildingCenter) {
       visibleLayers.sort((a, b) => {
         const aCenter = a.getBounds().getCenter();
@@ -322,7 +281,6 @@ const legendDiv = document.getElementById('legend');
       });
     }
 
-    // Re-add sorted layers
     visibleLayers.forEach(layer => {
       map.addLayer(layer);
       visibleCount++;
@@ -331,7 +289,6 @@ const legendDiv = document.getElementById('legend');
     noLotsMessage.style.display = visibleCount === 0 ? 'block' : 'none';
   }
 
-  // Handicap parking icon & layer (unchanged)
   const handicapIcon = L.icon({
     iconUrl: 'https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/svgs/solid/wheelchair.svg',
     iconSize: [20, 20],
@@ -341,8 +298,8 @@ const legendDiv = document.getElementById('legend');
 
   let handicapLayer = null;
   handicapLayer = omnivore.kml('https://purdueuniversity.maps.arcgis.com/sharing/rest/content/items/13158cca51cf4190aaa002bde42f816d/data')
-    .on('ready', function() {
-      this.eachLayer(function(layer) {
+    .on('ready', function () {
+      this.eachLayer(function (layer) {
         if (layer instanceof L.Marker) {
           layer.setIcon(handicapIcon);
           layer.bindPopup('Handicap Accessible Parking');
@@ -351,13 +308,7 @@ const legendDiv = document.getElementById('legend');
     })
     .addTo(map);
 
-  // Event listeners to trigger filtering
-  passTypeSelect.addEventListener('change', filterParking);
-  document.getElementById('freeOnly')?.addEventListener('change', filterParking);
-  buildingSelect.addEventListener('change', buildingChanged);
-});
-
- function buildingChanged() {
+  function buildingChanged() {
     const selectedAbbr = buildingSelect.value;
     if (!buildingLayer) return;
 
@@ -390,3 +341,10 @@ const legendDiv = document.getElementById('legend');
       }
     }
   }
+
+  // Bind event listeners after defining functions
+  passTypeSelect.addEventListener('change', filterParking);
+  document.getElementById('freeOnly')?.addEventListener('change', filterParking);
+  buildingSelect.addEventListener('change', buildingChanged);
+  document.getElementById('handicapToggle')?.addEventListener('change', toggleHandicapParking);
+});

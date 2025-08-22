@@ -15,6 +15,7 @@
 
 /* Header */
 header {
+  max-width: 2000px;
   width: 100%;
   border-bottom: 1px solid #ccc;
 }

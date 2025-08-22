@@ -1,11 +1,10 @@
 /* Page wrapper and layout */
 .page-wrapper {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-  align-items: center; /* Center horizontally */
-  padding: 0 10px; /* Small side padding */
-  max-widtch: 85%;
+  max-width: 1500px; /* increase from 85% or smaller value */
+  width: 100%;
+  margin: 0 auto;  /* center horizontally */
+  padding: 0 10px;
+  box-sizing: border-box;
 }
 
 /* Container to constrain width for nav, map, etc */
@@ -145,10 +144,10 @@ footer {
 
 /* Map */
 #map {
+  width: 100%;         /* full width inside container */
+  max-width: 1500px;   /* match .page-wrapper max-width */
   height: 600px;
-  width: 100%;
-  max-width: 1500px; /* match container width */
-  margin: 20px auto; /* center horizontally with margin */
+  margin: 20px auto;
   box-sizing: border-box;
 }
 

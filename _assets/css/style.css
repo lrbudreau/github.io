@@ -1,183 +1,210 @@
-    .page-wrapper {
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-    }
+/* Page wrapper and layout */
+.page-wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  align-items: center; /* Center horizontally */
+  padding: 0 10px; /* Small side padding */
+}
 
-    header {
-      width: 100%;
-      border-bottom: 1px solid #ccc;
-    }    
+/* Container to constrain width for nav, map, etc */
+.container {
+  max-width: 960px; /* Or your preferred max width */
+  width: 100%;
+}
+
+/* Header */
+header {
+  width: 100%;
+  border-bottom: 1px solid #ccc;
+}
 
 .header-content {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      justify-content: flex-start;
-      flex-wrap: wrap;
-    }
-    
-    .branding {
-      display: flex;
-      align-items: center;
-      gap: 10px; 
-    }
-    
-    .department-title {
-      font-size: 24px;
-      font-weight: bold;
-      color: #000;
-      text-decoration: none;
-    }
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
 
-    #purdue-logo img {
-      width: 180px;
-      height: auto;
-    }
+.branding {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
 
-    #entity-title a {
-      font-size: 24px;
-      font-weight: bold;
-      color: #000;
-      text-decoration: none;
-    }
+.department-title,
+#entity-title a {
+  font-size: 24px;
+  font-weight: bold;
+  color: #000;
+  text-decoration: none;
+}
 
-    nav.top-nav {
-      background-color: #222;
-    }
+#purdue-logo img {
+  width: 180px;
+  height: auto;
+}
 
-    .nav-links {
-      list-style: none;
-      margin: 0;
-      padding: 10px 20px;
-      display: flex;
-      gap: 20px;
-    }
+/* Navigation */
+nav.top-nav {
+  background-color: #222;
+}
 
-    .nav-links li a {
-      color: #fff;
-      text-decoration: none;
-      font-weight: bold;
-    }
+.nav-links {
+  list-style: none;
+  margin: 0;
+  padding: 10px 20px;
+  display: flex;
+  gap: 20px;
+}
 
-    .nav-links li a:hover {
-      text-decoration: underline;
-    }
+.nav-links li a {
+  color: #fff;
+  text-decoration: none;
+  font-weight: bold;
+}
 
-    main {
-      flex: 1;
-      padding: 40px 20px;
-    }
+.nav-links li a:hover {
+  text-decoration: underline;
+}
 
-    .card-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 30px;
-    }
+/* Main content */
+main {
+  flex: 1;
+  padding: 40px 20px;
+  width: 100%;
+  max-width: 960px;
+  margin: 0 auto;
+}
 
-    .card {
-      background-color: #fff;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      overflow: hidden;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-    }
+/* Card grid */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 30px;
+}
 
-    .card img {
-      width: 100%;
-      height: auto;
-    }
+.card {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
 
-    .card-content {
-      padding: 20px;
-    }
+.card img {
+  width: 100%;
+  height: auto;
+}
 
-    .card-content h3 {
-      margin-top: 0;
-      font-size: 1.2em;
-      color: #333;
-    }
+.card-content {
+  padding: 20px;
+}
 
-    .card-content p {
-      color: #555;
-    }
+.card-content h3 {
+  margin-top: 0;
+  font-size: 1.2em;
+  color: #333;
+}
 
-    footer {
-      background-color: #222;
-      color: #fff;
-      text-align: center;
-      padding: 15px 10px;
-    }
-        #map {
-            height: 600px;
-            width: 100%;
-        }
-        #controls {
-            padding: 10px;
-            background: #f4f4f4;
-            display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
-            justify-content: center;
-            border-bottom: 1px solid #ccc;
-        }
-        #controls label {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-        #controls input, #controls select {
-            padding: 4px;
-        }
-      .leaflet-marker-icon.leaflet-zoom-animated {
-        max-width: 24px !important;
-        max-height: 24px !important;
-      }
-        .info.legend {
-          background: white;
-          padding: 10px;
-          border-radius: 5px;
-          box-shadow: 0 0 6px rgba(0, 0, 0, 0.2);
-          font-size: 14px;
-          line-height: 1.5;
-          max-width: 250px;
-          border: 1px solid #ccc;
-        }
-        .legend-entry {
-          display: flex;
-          align-items: center;
-          margin: 4px 0;
-        }
-        .legend-item {
-          width: 14px;
-          height: 14px;
-          display: inline-block;
-          margin-right: 6px;
-          border: 1px solid #000;
-        }   
-        #building {
-          max-width: 300px;
-          width: 300px;
-          text-overflow: ellipsis;
-          white-space: nowrap;
-          overflow: hidden;
-        }
-        /* Target the Select2 container */
-        .select2-container--default .select2-selection--single {
-          height: 30px; /* Adjust as needed */
-          padding: 2px 6px;
-          font-size: 0.9rem; /* Adjust text size */
-          line-height: 26px; /* Vertically center text */
-          border-radius: 4px;
-        }
-        
-        /* Optional: style the arrow */
-        .select2-container--default .select2-selection--single .select2-selection__arrow {
-          height: 100%;
-        }
-        
-        /* Shrink the dropdown (optional) */
-        .select2-container .select2-dropdown {
-          font-size: 0.9rem;
-        }
+.card-content p {
+  color: #555;
+}
 
+/* Footer */
+footer {
+  background-color: #222;
+  color: #fff;
+  text-align: center;
+  padding: 15px 10px;
+  width: 100%;
+}
+
+/* Controls bar */
+#controls {
+  padding: 10px;
+  background: #f4f4f4;
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+  justify-content: center;
+  border-bottom: 1px solid #ccc;
+}
+
+#controls label {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+#controls input,
+#controls select {
+  padding: 4px;
+}
+
+/* Map */
+#map {
+  height: 600px;
+  width: 100%;
+  max-width: 960px; /* match container width */
+  margin: 20px auto; /* center horizontally with margin */
+  box-sizing: border-box;
+}
+
+/* Leaflet markers */
+.leaflet-marker-icon.leaflet-zoom-animated {
+  max-width: 24px !important;
+  max-height: 24px !important;
+}
+
+/* Legend */
+.info.legend {
+  background: white;
+  padding: 10px;
+  border-radius: 5px;
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.2);
+  font-size: 14px;
+  line-height: 1.5;
+  max-width: 250px;
+  border: 1px solid #ccc;
+}
+
+.legend-entry {
+  display: flex;
+  align-items: center;
+  margin: 4px 0;
+}
+
+.legend-item {
+  width: 14px;
+  height: 14px;
+  display: inline-block;
+  margin-right: 6px;
+  border: 1px solid #000;
+}
+
+/* Building dropdown */
+#building {
+  max-width: 300px;
+  width: 300px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+/* Select2 styling */
+.select2-container--default .select2-selection--single {
+  height: 30px;
+  padding: 2px 6px;
+  font-size: 0.9rem;
+  line-height: 26px;
+  border-radius: 4px;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+  height: 100%;
+}
+
+.select2-container .select2-dropdown {
+  font-size: 0.9rem;
+}

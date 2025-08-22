@@ -308,32 +308,38 @@ $(document).ready(function () {
     })
     .addTo(map);
 
-  // Bind event listeners after defining functions
-  passTypeSelect.addEventListener('change', filterParking);
-  buildingSelect.addEventListener('change', buildingChanged);
-  document.getElementById('handicapToggle')?.addEventListener('change', toggleHandicapParking);
-});
 
   function buildingChanged() {
     const selectedAbbr = buildingSelect.value;
-    if (!buildingLayer) return;
-
     selectedBuildingAbbr = selectedAbbr || null;
-
+  
     if (!selectedAbbr) {
       map.setView([40.4237, -86.9212], 15);
     } else {
-      buildingLayer.eachFeature(layer => {
-        const props = layer.feature?.properties;
-        if (props?.BLDG_ABBR === selectedAbbr) {
-          const bounds = layer.getBounds();
-          const padding = window.innerWidth > 768 ? [200, 200] : [100, 100];
-          map.fitBounds(bounds, { padding });
+      // Find the selected feature from stored features
+      const feature = buildingFeatures.find(f => f.properties.BLDG_ABBR === selectedAbbr);
+      if (feature) {
+        const layer = L.geoJSON(feature, {
+          style: {
+            color: '#0000ff',
+            weight: 2,
+            opacity: 1
+          }
+        }).addTo(map);
+  
+        const bounds = layer.getBounds();
+        const padding = window.innerWidth > 768 ? [200, 200] : [100, 100];
+        map.fitBounds(bounds, { padding });
+  
+        // Optional: remove previous selection layer before adding new
+        if (map._buildingHighlightLayer) {
+          map.removeLayer(map._buildingHighlightLayer);
+          map._buildingHighlightLayer = null;
         }
-      });
+        map._buildingHighlightLayer = layer;
+      }
     }
-
-    buildingLayer.setStyle(buildingLayer.options.style);
+  
     filterParking();
   }
 
@@ -347,3 +353,11 @@ $(document).ready(function () {
       }
     }
   }
+  
+  // Bind event listeners after defining functions
+  passTypeSelect.addEventListener('change', filterParking);
+  buildingSelect.addEventListener('change', buildingChanged);
+  document.getElementById('handicapToggle')?.addEventListener('change', toggleHandicapParking);
+  
+});
+

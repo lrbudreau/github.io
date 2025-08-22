@@ -10,7 +10,7 @@
 
 /* Container to constrain width for nav, map, etc */
 .container {
-  max-width: 960px; /* Or your preferred max width */
+  max-width: 1500px; /* Or your preferred max width */
   width: 100%;
 }
 
@@ -74,7 +74,7 @@ main {
   flex: 1;
   padding: 40px 20px;
   width: 100%;
-  max-width: 960px;
+  max-width: 1500px;
   margin: 0 auto;
 }
 
@@ -147,7 +147,7 @@ footer {
 #map {
   height: 600px;
   width: 100%;
-  max-width: 960px; /* match container width */
+  max-width: 1500px; /* match container width */
   margin: 20px auto; /* center horizontally with margin */
   box-sizing: border-box;
 }

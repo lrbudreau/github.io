@@ -4,19 +4,19 @@ title: Purdue Parking Map
 ---
 <div id="controls">
   <label>Pass Type: 
-    <select id="passType" onchange="filterParking()">
+    <select id="passType">
       <option value="">-- Select Pass Type --</option>
     </select>
   </label>
 
   <label for="building">Destination Building:</label>
-  <select id="building" onchange="buildingChanged()" class="select2">
+  <select id="building" class="select2">
     <option value="">-- Select Building --</option>
   </select>
 
   <label>
     Handicap Parking:
-    <input type="checkbox" id="handicapToggle" checked onchange="toggleHandicapParking()">
+    <input type="checkbox" id="handicapToggle" checked>
   </label>
 
   <button onclick="filterParking()">Find Parking</button>

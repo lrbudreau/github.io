@@ -3,7 +3,6 @@ $(document).ready(function() {
       placeholder: "-- Select Building --",
       allowClear: true,
     });
-  });
   // Initialize the map at Purdue coordinates
   var map = L.map('map').setView([40.4237, -86.9212], 15);
 
@@ -390,3 +389,4 @@ const legendDiv = document.getElementById('legend');
   passTypeSelect.addEventListener('change', filterParking);
   document.getElementById('freeOnly')?.addEventListener('change', filterParking);
   buildingSelect.addEventListener('change', buildingChanged);
+});

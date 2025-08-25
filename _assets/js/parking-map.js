@@ -231,7 +231,7 @@ $(document).ready(function () {
         : displayName;
       buildingSelect.appendChild(option);
     });
-      document.getElementById('building')?.addEventListener('change', buildingChanged);
+      $('#building').on('change', buildingChanged);
   });
 
   function getDistance(latlng1, latlng2) {
@@ -324,7 +324,7 @@ function buildingChanged() {
       const padding = window.innerWidth > 768 ? [200, 200] : [100, 100];
       map.fitBounds(bounds, { padding });
     }
-    console.log('clicked');
+    console.log('buildingChanged triggered');
   }
 
   // Force style update to highlight selected

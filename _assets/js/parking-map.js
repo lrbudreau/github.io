@@ -231,7 +231,7 @@ $(document).ready(function () {
         : displayName;
       buildingSelect.appendChild(option);
     });
-      buildingSelect.addEventListener('change', buildingChanged);
+      document.getElementById('building')?.addEventListener('change', buildingChanged);
   });
 
   function getDistance(latlng1, latlng2) {
@@ -345,7 +345,6 @@ function buildingChanged() {
   
   // Bind event listeners after defining functions
   passTypeSelect.addEventListener('change', filterParking);
-  //document.getElementById('building')?.addEventListener('change', buildingChanged);
   document.getElementById('handicapToggle')?.addEventListener('change', toggleHandicapParking);
 });
 
